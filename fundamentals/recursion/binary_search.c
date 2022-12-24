@@ -3,13 +3,11 @@
 */
 #include <stdio.h>
 
-int binary_search(int list[], int start, int end, int n)
+int binary_search(int *list, int start, int end, int n)
 {
     // If starting point is greater than end point, n is not in list
     if (start > end)
-    {
         return -1;
-    }
 
     // Calculate mid point
     int mid = (end + start) / 2;
