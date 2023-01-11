@@ -28,7 +28,7 @@ int main(void)
 {
     int A[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    printf("Pos: %i\n", binary_search(A, 0, 9, 3));
+    printf("Pos: %i\n", binary_search(A, 0, 9, 1));
 
     return 0;
 }
