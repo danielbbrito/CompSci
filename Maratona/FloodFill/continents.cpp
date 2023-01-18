@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 
 using namespace std;
 
@@ -6,34 +6,34 @@ using namespace std;
 
 char arr[SIZE][SIZE];
 char land;
-int n, m, n1, m1;
+int n, m, n1, m1, count=0;
 
-int X[] = {1, -1, 0, 0, 1, -1, 1, -1};
-int Y[] = {0, 0, 1, -1, 1, -1, -1, 1};
+int X[] = {1, -1, 0, 0};
+int Y[] = {0, 0, 1, -1};
 
-int floodContinent(int i, int j, int count)
+void floodContinent(int i, int j)
 {
-    // Flood current element, so that it is nmo longer accessible
-    arr[i][j] = '0';
-    count++;
+    // Flood current element, so that it is no longer accessible
+    arr[i][j] = land + 3;
+    ::count++;
 
     // Check adjacent elements
-    for (int k = 0; k < 8; k++)
+    for (int k = 0; k < 4; k++)
     {
         int Ni = i + Y[k];
         int Nj = j + X[k];
 
         if (Ni >= 0 && Nj >= 0 && Ni < n && Nj < m && arr[Ni][Nj] == land)
-            return floodContinent(Ni, Nj, count);
+            floodContinent(Ni, Nj);
     }
 
     if (j == m - 1 && arr[i][0] == land)
-        return floodContinent(i, 0, count);
+        floodContinent(i, 0);
     
     else if (j == 0 && arr[i][m - 1] == land)
-        return floodContinent(0, m - 1, count);
+        floodContinent(i, m - 1);
 
-    return count;
+    return;
 
 }
 
@@ -42,7 +42,6 @@ int main()
     // Read map size
     while (cin >> n >> m)
     {
-        memset(arr, 0, sizeof(arr));
         int ans = 0;
 
         // Read map
@@ -52,22 +51,22 @@ int main()
 
         // Read size of king's territory
         cin >> n1 >> m1;
-        cout << '\n';
 
         land = arr[n1][m1];
 
         // Flood the king's continent
-        floodContinent(n1, m1, 0);
+        floodContinent(n1, m1);
 
         // Iterate over the continent
         for (int i = 0; i < n; i++)
             for (int j = 0; j < m; j++)
                 if (arr[i][j] == land)
                 {
-                    int current = floodContinent(i, j, 0);
+                    ::count = 0;
+                    floodContinent(i, j);
 
-                    if (current > ans)
-                        ans = current;
+                    
+                    ans = max(ans, ::count);
                 }
 
         cout << ans << endl;
