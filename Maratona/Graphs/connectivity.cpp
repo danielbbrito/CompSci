@@ -2,7 +2,7 @@
 
 using namespace std;
 
-vector<int> adjlist[30];
+set<int> adjlist[30];
 bool seen[30];
 
 // Finds out how many connected subgraphs there are
@@ -10,13 +10,10 @@ void dfs(int u)
 {
     seen[u] = true;
     
-    int sz = adjlist[u].size();
-    for (int i = 0; i < sz; i++)
+    for (auto it: adjlist[u])
     {
-        int v = adjlist[u][i];
-
-        if (!seen[v])
-            dfs(v);
+        if (!seen[it])
+            dfs(it);
     }
 }
 
@@ -49,8 +46,8 @@ int main()
             int node1 = edge[0] - 65;
             int node2 = edge[1] - 65;
 
-            adjlist[node1].push_back(node2);
-            adjlist[node2].push_back(node1);
+            adjlist[node1].insert(node2);
+            adjlist[node2].insert(node1);
             getline(cin, edge);
         }
 

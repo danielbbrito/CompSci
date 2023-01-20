@@ -1,8 +1,8 @@
-#include <bits/stdc++.h>
+#include <iostream>
 
 using namespace std;
 
-char wall, maze[80][30];
+char wall, maze[35][85];
 
 int n, m, c, r=0;
 int X[] = {1, -1, 0, 0};
@@ -39,7 +39,7 @@ int main()
 
     while (t--)
     {
-        memset(maze, ' ', sizeof(maze));
+        memset(maze, '\0', sizeof(maze));
         string line;
         char wall;
         int startRow;
