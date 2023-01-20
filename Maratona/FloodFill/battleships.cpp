@@ -3,7 +3,7 @@
 using namespace std;
 
 #define SIZE 101
-int n, shipSize = 0;
+int n;
 char grid[SIZE][SIZE];
 
 int X[] = {0, 0, 1, -1};
@@ -40,7 +40,7 @@ bool isShip(int i, int j)
 void FloodFillVert(int i, int j)
 {
     grid[i][j] = '.';
-    shipSize++;
+
 
     for (int k = 0; k < 2; k++)
     {
@@ -57,7 +57,7 @@ void FloodFillVert(int i, int j)
 void FloodFillHor(int i, int j)
 {
     grid[i][j] = '.';
-    shipSize++;
+
 
     for (int k = 2; k < 4; k++)
     {
@@ -85,7 +85,6 @@ int main()
         // Read n
         cin >> n;
 
-        int maxSize = n / 2;
         // Read grid
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
@@ -100,16 +99,13 @@ int main()
                     if (isVertical(j, k))
                         FloodFillVert(j, k);
                     
-                    else if (isShip(j, j))
+                    else if (isShip(j, k))
                         grid[j][k] = '.';
                     
                     else    
                         FloodFillHor(j, k);
-                    
-                    if (shipSize <= maxSize)
-                        count++;
-                    
-                    shipSize = 0;
+                
+                    count++;
                 }
             }
         
