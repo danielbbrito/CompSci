@@ -1,6 +1,4 @@
-#include <iostream>
-#include <set>
-#include <map>
+#include <bits/stdc++.h>
 
 using namespace std;
 
