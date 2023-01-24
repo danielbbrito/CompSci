@@ -3,10 +3,11 @@ using namespace std;
 
 int Y[] = {1, -1, 0, 0};
 int X[] = {0, 0, 1, -1};
+int r, c;
 
 int bfs(pair<int, int> s, pair<int, int> e, bool b[][1001])
 {
-    vector<vector<int>> dist(1000, vector<int>(1000, -1));
+    vector<vector<int>> dist(1001, vector<int>(1001, -1));
     queue<pair<int, int>> q;
 
     dist[s.first][s.second] = 0;
@@ -25,7 +26,7 @@ int bfs(pair<int, int> s, pair<int, int> e, bool b[][1001])
             int Ni = curr.first + Y[i];
             int Nj = curr.second + X[i];
 
-            if (Ni >=0 && Nj >= 0 && Ni <= e.first && Nj <= e.second && dist[Ni][Nj] == -1 && !b[Ni][Nj])
+            if (Ni >=0 && Nj >= 0 && Ni <= r && Nj <= c && dist[Ni][Nj] == -1 && !b[Ni][Nj])
             {
                 dist[Ni][Nj] = dist[curr.first][curr.second] + 1;
                 q.push({Ni, Nj});
@@ -38,8 +39,6 @@ int bfs(pair<int, int> s, pair<int, int> e, bool b[][1001])
 
 int main()
 {
-    int r, c;
-
     cin >> r >> c;
 
     // While valid
@@ -57,7 +56,7 @@ int main()
             int row, amount, col;
             cin >> row >> amount;
 
-            while (amount--)
+            for (int j = 0; j < amount; j++)
             {
                 cin >> col;
 

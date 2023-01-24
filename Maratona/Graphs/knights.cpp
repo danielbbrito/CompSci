@@ -8,12 +8,12 @@ int X[] = {-1, 1, -1, 1, 2, 2, -2, -2};
 
 bool isValid(int i, int j)
 {
-    return i >= 0 && j >= 0 && i < 8 && j < 8;
+    return i >= 1 && j >= 1 && i <= 8 && j <= 8;
 }
 
 int bfs()
 {
-    vector<vector<int>> dist(8, vector<int>(8, -1));
+    vector<vector<int>> dist(10, vector<int>(10, -1));
     queue<pair<int, int>> q;
     dist[coords[0].first][coords[0].second] = 0;
     q.push(coords[0]);
@@ -55,4 +55,6 @@ int main()
 
         coords.clear();
     }
+
+    return 0;
 }

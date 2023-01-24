@@ -23,16 +23,10 @@ string bfs(int s, int e)
 
         for (auto it: buttons)
         {
-            if (curr + it <= 9999 && dist[curr + it] == TAM)
+            if (dist[(curr + it) % 10000] == TAM)
             {
                 int v = curr + it;
-                dist[v] = dist[curr] + 1;
-                q.push(v);
-            }
-
-            if (curr + it > 9999 && dist[curr + it] == TAM)
-            {
-                int v = (curr + it) - 9999;
+                v = v % 10000;
                 dist[v] = dist[curr] + 1;
                 q.push(v);
             }
@@ -49,7 +43,7 @@ int main()
     int l, u, r, c=1;
     cin >> l >> u >> r;
 
-    while (l != 0 || u != 0 || r != 0)
+    while (l || u || r)
     {
         // Read buttons available
         for (int i = 0; i < r; i++)
