@@ -48,18 +48,40 @@ int main()
         while (m--)
         {
             string a, b;
-
+            cin >> a >> b;
             adjlist[a[0]].insert(b[0]);
             adjlist[b[0]].insert(a[0]);
         }
 
-        string s, e;
-        cin >> s >> e;
+        while (n--)
+        {
 
-        map<char, char> path = bfs(s[0], e[0]);
+            string s, e;
+            cin >> s >> e;
 
-        // Reconstruir caminho
+            map<char, char> path = bfs(s[0], e[0]);
 
+            // Reconstruir caminho
+            string p = "";
+            char buffer = e[0];
+            p += buffer;
 
+            while (buffer != '\0')
+            {
+                p += path[buffer];
+                buffer = path[buffer];
+            }
+
+            for (auto it = p.rbegin(); it != p.rend(); it++)
+                cout << *it;
+            
+            cout << endl;
+        }    
+
+        adjlist.clear();
+        if (t)
+            cout << endl;
     }
+
+    return 0;
 }
