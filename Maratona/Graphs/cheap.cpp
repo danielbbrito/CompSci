@@ -2,91 +2,73 @@
 
 using namespace std;
 
-map<string, set<string>> adjlist;
-map<string, string> path;
+map<string, vector<string>> adjlist;
 
-bool bfs(string s, string e, int amount, map<string, int> dist)
+map<string, string> bfs(string s, string e)
 {
+    vector<bool> seen(1000, false);
     queue<string> q;
-    
+    map<string, string> path;
+
+    seen[(int)s[0]] = true;
     q.push(s);
-    dist[s] = 0;
-    path[s] = "";
+
     while (q.size())
     {
         string curr = q.front();
         q.pop();
 
         if (curr == e)
-            return true;
+            return path;
 
         for (auto it: adjlist[curr])
-            if (dist[it] == -1)
+            if (!seen[(int)it[0]])
             {
-                dist[it] = dist[curr] + 1;
                 q.push(it);
+                seen[(int)it[0]] = true;
                 path[it] = curr;
             }
     }
 
-    return false;
+    return path;
+
+}
+
+void printPath(map<string, string> path, string e, string s)
+{
+    string v = path[e]; //?
+
+    while (v != s)
+        printPath(path, v, s);
+    
+    cout << v << e << endl;
 }
 
 int main()
 {
-    int n;
+    int t;
 
-    while (cin >> n)
-    {
-        map<string, int> dist;
-        vector<string> a;
-
-        for (int i = 0; i < n; i++)
+     while (cin >> t)
+     {
+        for (int i = 0; i < t; i++)
         {
             string a, b;
             cin >> a >> b;
-
-            adjlist[a].insert(b);
-            adjlist[b].insert(a);
-
-            dist[a] = -1;
-            dist[b] = -1;
+            adjlist[a].push_back(b);
+            adjlist[b].push_back(a);
         }
 
-        string start, end;
-
-        cin >> start >> end;
-
-        bool success = bfs(start, end, n, dist);
-
-        // Output path
-        if (!success)
-            cout << "No route\n";
-        
+        string s, e;
+        cin >> s >> e;
+        map<string, string> path = bfs(s, e);
+        cout << e;
+        if (path.find(e) != path.end());
+            //printPath(path, e);
         else
-        {
-            a.push_back(end);
-
-            string c = end;
-            while (c != "")
-            {
-                a.push_back(path[c]);
-                c = path[c];
-            }
-        }
-
-        cout << a.back();
-        for (auto it = a.rbegin() + 1; it != a.rend(); it++)
-        {
-            cout << ' ' << *it;
-        }
-
-        cout << endl;
-        
+            cout << "No route\n";
         adjlist.clear();
-        path.clear();
-        dist.clear();
-    }
 
-    return 0;
+     }
+
+     return 0;
 }
