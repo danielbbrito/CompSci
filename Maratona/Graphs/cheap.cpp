@@ -4,53 +4,54 @@ using namespace std;
 
 map<string, vector<string>> adjlist;
 
-map<string, string> bfs(string s, string e)
+void bfs(string s, string e)
 {
-    vector<bool> seen(1000, false);
-    queue<string> q;
-    map<string, string> path;
+    map<string, bool> seen;
+    for (auto it: adjlist)
+        seen[it.first] = false;
 
-    seen[(int)s[0]] = true;
-    q.push(s);
+    queue<vector<pair<string, string>>> q;
 
-    while (q.size())
+    seen[s] = true;
+    seen[adjlist[s].front()] = true;
+
+    q.push({{s, adjlist[s].front()}});
+
+    while(q.size())
     {
-        string curr = q.front();
-        q.pop();
+       vector<pair<string, string>> curr = q.front();
+       q.pop();
 
-        if (curr == e)
-            return path;
+       if (curr.back().second == e)
+       {
+            for (int i = 0; i < curr.size(); i++)
+                cout << curr[i].first << ' ' << curr[i].second << endl;
+            
+            return;
+       }
 
-        for (auto it: adjlist[curr])
-            if (!seen[(int)it[0]])
+       for (auto it: adjlist[curr.back().second])
+            if (!seen[it])
             {
-                q.push(it);
-                seen[(int)it[0]] = true;
-                path[it] = curr;
+                seen[it] = true;
+                curr.push_back({curr.back().second, it});
+
+                q.push(curr);
             }
+
     }
 
-    return path;
-
-}
-
-void printPath(map<string, string> path, string e, string s)
-{
-    string v = path[e]; //?
-
-    while (v != s)
-        printPath(path, v, s);
+    cout << "No route\n";
+    return;
     
-    cout << v << e << endl;
 }
-
 int main()
 {
-    int t;
+    int n;
 
-     while (cin >> t)
-     {
-        for (int i = 0; i < t; i++)
+    while (cin >> n)
+    {
+        while (n--)
         {
             string a, b;
             cin >> a >> b;
@@ -60,15 +61,10 @@ int main()
 
         string s, e;
         cin >> s >> e;
-        map<string, string> path = bfs(s, e);
-        cout << e;
-        if (path.find(e) != path.end());
-            //printPath(path, e);
-        else
-            cout << "No route\n";
+
+        bfs(s, e);
+
+        cout << endl;
         adjlist.clear();
-
-     }
-
-     return 0;
+    }
 }

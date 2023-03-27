@@ -2,85 +2,66 @@
 
 using namespace std;
 
-map<char, vector<char>> adjlist;
+map<char, vector<char> > adjlist;
 
-map<char, char> bfs(char s, char e)
+void bfs(string s, string e)
 {
-    map<char, bool> seen;
-    map<char, char> path;
-    queue<char> q;
-    q.push(s);
-    seen[s] = true;
-    path[s] = '\0';
+    vector<bool> seen(255, false);
+    queue<string> q;
+    q.push(string(1, s[0]));
+    seen[(int)s[0]] = true;
 
     while (q.size())
     {
-        char curr = q.front();
+        string curr = q.front();
         q.pop();
 
-        if (curr == e)
-            return path;
-
-        for (auto it: adjlist[curr])
+        if (curr.back() == e.front())
+            cout << curr << endl;
+        
+        for (auto it: adjlist[curr.back()])
         {
-            if (seen.find(it) == seen.end())
+            if (!seen[(int)it])
             {
-                seen[it] = true;
-                path[it] = curr;
-                q.push(it);
+                seen[(int)it] = true;
+                q.push(curr + it);
             }
         }
     }
-
-    return path;
-}
-
-void printPath(map<char, char> p, char e)
-{
-    char c = p[e];
-
-    if (c != e)
-        printPath(p, c);
-    
-    cout << e;
 }
 
 int main()
 {
     int t;
-    cin >> t;
     
+    cin >> t;
+
     while (t--)
     {
-        int n,m;
+        int m, n;
         cin >> m >> n;
 
         while (m--)
         {
             string a, b;
             cin >> a >> b;
+
             adjlist[a[0]].push_back(b[0]);
             adjlist[b[0]].push_back(a[0]);
         }
 
         while (n--)
         {
-
             string s, e;
+
             cin >> s >> e;
 
-            map<char, char> path = bfs(s[0], e[0]);
+            bfs(s, e);
+        }
 
-            // Reconstruir caminho
-            printPath(path, e[0]);
-            
-            cout << endl;
-        }    
-
-        adjlist.clear();
         if (t)
             cout << endl;
+        
+        adjlist.clear();
     }
-    
-    return 0;
 }
