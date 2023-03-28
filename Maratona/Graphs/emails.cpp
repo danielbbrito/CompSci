@@ -1,61 +1,57 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+int adjlist[50001];
+vector<bool> seen(50001);
 
-set<int> adjlist[50001];
-bool seen[50001];
-map<int, int> possible;
-
-int count;
-
-void dfs(int i)
+int dfs(int s, int c)
 {
-    seen[i] = true;
-    ::count++;
+    seen[s] = true;
 
-    for (auto it: adjlist[i])
-        if (!seen[it])
-            dfs(it);
+    if (!seen[adjlist[s]])
+        return c + dfs(adjlist[s], 1);
+    
+    return 1;
 }
 
 int main()
 {
     int t;
-
     cin >> t;
 
     for (int i = 1; i <= t; i++)
     {
         int n;
         cin >> n;
-        for (int j = 0; j < n; j++)
-        {
-            adjlist[j].clear();
-            seen[j] = false;
-        }
+
+        int maior=0, escolhido=0;
+
+        for (int j = 1; j <= n + 5; j++)
+            adjlist[j] = 0;
 
         for (int j = 0; j < n; j++)
         {
             int a, b;
-
             cin >> a >> b;
-
-            adjlist[a].insert(b);
+            adjlist[a] = b;
         }
 
         for (int j = 1; j <= n; j++)
         {
-            if (!seen[j])
-            {
-                ::count = 0;
-                dfs(j);
-            }
+            for (int k = 1; k <= n; k++)
+                seen[k] = false;
+
+            int curr = dfs(j, 0);
             
-            possible[::count] = possible.find(::count) != possible.end()  || possible[::count] > j ? possible[::count] = j : possible[::count];
+            if (curr > maior)
+            {
+                maior = curr;
+                escolhido = j;
+            }
         }
 
-        cout << "Case #" << i << ": " << (possible.rbegin())->second << endl;
-    }
+        cout << "Case " << i << ": " << escolhido << endl;
 
+    }
     return 0;
 }

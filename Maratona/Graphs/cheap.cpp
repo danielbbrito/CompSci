@@ -49,7 +49,7 @@ void bfs(string s, string e)
 
 int main()
 {
-    int n;
+    int n, flag=0;
 
     while (cin >> n)
     {
@@ -63,9 +63,11 @@ int main()
 
         string s, e;
         cin >> s >> e;
+        if (flag == 1)
+            cout << endl;
 
         bfs(s, e);
-
+        flag = 1;
         cout << endl;
         adjlist.clear();
     }
