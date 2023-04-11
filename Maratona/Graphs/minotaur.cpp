@@ -1,73 +1,82 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-map<char, set<char>> adjlist;
-vector<char> candles;
-vector<bool> visited(255, false);
-queue<char> seen;
-int ct;
+map<char, vector<char>> adjlist;
+vector<char> candle;
 
-void dfs(int s, int k)
+int ct;
+bool seen[256];
+char trap;
+
+void dfs(char s, char x, int c)
 {
-    visited[s] = true;
+    if (ct % c == 0)
+    {
+        candle.push_back(s);
+        seen[s] = true;
+    }
+
+
+
     ct++;
 
-    seen.push(s);
-
-    if (ct % k == 0)
-        candles.push_back(s);
-
     for (auto it: adjlist[s])
-        if (!visited[it])
-            dfs(it, k);
+    {
+        int t = 0;
 
+        if (!seen[it] && it != x)
+        {
+            t++;
+            dfs(it, s, c);
+        }
+
+        if (!t)
+        {
+            trap = it;
+            return;
+        }
+    }
 }
 int main()
 {
-    char a;
+    char a, b, buffer;
 
     cin >> a;
 
     while (a != '#')
     {
-        char buffer, b;
-        cin >> buffer >> b;
+        memset(seen, false, sizeof(seen));
+
         while (1)
         {
+            cin >> buffer >> b;
             while (b != ';' && b != '.')
             {
-                adjlist[a].insert(b);
+                adjlist[a].push_back(b);
                 cin >> b;
             }
 
-            if (b == '.')
-                break;
-            
-            cin >> a >> buffer >> b;
+            if (b == '.') break;
+
+            cin >> a;
         }
 
-        char t, m;
-        int k;
-        cin >> m >> t >> k;
-        visited[t] = true;
-        ct = 0;
-        dfs(m, k);
+        char m,s; int c;
+        cin >> m >> s >> c;
+        ct = 1;
+
+        dfs(m, s, c);
+
+        for (auto it: candle)
+            if (it != trap)
+                cout << it << ' ';
         
-        for (int i = 1; seen.size(); i++)
-        {
-            if (seen.size() == 1)
-                cout << '/' << seen.front() << endl;
-            
-            else if (i % k == 0)
-                cout << seen.front() << ' ';
-            
-            seen.pop();
-        }
+        cout << '/' << trap << endl;
 
         adjlist.clear();
-        visited.clear();
-        candles.clear();
 
         cin >> a;
     }
+
+    return 0;
 }
