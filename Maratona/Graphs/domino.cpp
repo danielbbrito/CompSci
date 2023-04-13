@@ -19,7 +19,7 @@ int main()
         for (int i = 0; i < s.length(); i++)
         {
             adjlist[s[i]].push_back(s[i+1]);
-            adjlist[s[i+1]]
+            adjlist[s[i+1]];
         }
     }
 }

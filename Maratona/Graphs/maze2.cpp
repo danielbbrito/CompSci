@@ -1,67 +1,64 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int grid[1000][1000], n, m;
+typedef pair<int, pair<int,int>> ppii;
 
+int grid[1005][1005];
 int Y[] = {1, 0, -1, 0};
 int X[] = {0, 1, 0, -1};
+int n,m;
 
 bool isValid(int i, int j)
 {
-    return i >= 0 && j >= 0 && i < n && j < m;
+    return i >= 0&& j>=0&&i<n&&j<m;
 }
-
-int traverse()
+int dijkstra()
 {
-    int dist[1000][1000];
-    for (int i = 0; i < 1000; i++)
-        memset(dist[i], INT_MAX, sizeof(dist[i]));
-    
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+    priority_queue<ppii, vector<ppii>, greater<ppii>> q;
+    vector<vector<int>> dist(1005, vector(1005, -1));
 
-    q.push({0, 0});
+    dist[0][0] = grid[0][0];
 
-    dist[{0, 0}] = grid[0][0];
+    q.push({dist[0][0], {0, 0}});
 
     while (q.size())
     {
-        pair<int , int> u = q.top();
+        ppii u = q.top();
 
         q.pop();
 
         for (int k = 0; k < 4; k++)
         {
-            int Ni = u.first + Y[k], Nj = u.second + X[k];
+            int Ni = u.second.first + Y[k], Nj = u.second.second;
 
-            if (isValid(Ni, Nj) && dist[u.first][u.second] + grid[Ni][Nj] < dist[Ni][Nj])
+            if (isValid(Ni, Nj) && (dist[Ni][Nj] == -1 || u.first + grid[Ni][Nj] < dist[Ni][Nj]))
             {
-                dist[Ni][Nj] = dist[u.first][u.second] + grid[Ni][Nj];
+                dist[Ni][Nj] = u.first + grid[Ni][Nj];
 
-                q.push({Ni, Nj});
+                q.push({dist[Ni][Nj], {Ni, Nj}});
             }
         }
     }
-
-    return dist[{n-1, m-1}];
 }
 
 int main()
 {
     int t;
-    cin >> t;
+
+    scanf("%d", &t);
 
     while (t--)
     {
-        cin >> n >> m;
+        scanf("%d", &n); scanf("%d", &m);
 
         for (int i = 0; i < n; i++)
             for (int j = 0; j < m; j++)
-                cin >> grid[i][j];
+            {
+                int a;
+                scanf("%d", &a);
+                grid[i][j] = a;
+            }
 
-        int d = traverse();
-
-        cout << d << endl;
+        printf("%d\n", dijkstra());
     }
-
-    return 0;
 }
