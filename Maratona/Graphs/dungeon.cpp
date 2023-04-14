@@ -52,7 +52,7 @@ int bfs(int l, int i, int j)
 
         if (isValid(u[0] - 1, u[1], u[2]) && levels[u[0]-1][u[1]][u[2]] != '#' && dist[u[0]-1][u[1]][u[2]] == -1)
         {
-            dist[u[0]+1][u[1]][u[2]] = dist[u[0]][u[1]][u[2]] + 1;
+            dist[u[0]-1][u[1]][u[2]] = dist[u[0]][u[1]][u[2]] + 1;
             q.push({u[0]-1, u[1], u[2]});
         }
     }
