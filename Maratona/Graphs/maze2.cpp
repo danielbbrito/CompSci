@@ -15,7 +15,7 @@ int traverse()
 {
     int dist[1000][1000];
     for (int i = 0; i < 1000; i++)
-        memset(dist[i], INT_MAX, sizeof(dist[i]));
+        memset(dist[i], 10000, sizeof(dist[i]));
     
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
 
