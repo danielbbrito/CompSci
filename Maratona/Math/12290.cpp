@@ -8,6 +8,49 @@ bool check(int n)
     return n % 7 == 0 || ns.find("7") != string::npos;
 }
 
+int calculate(int n, int m, int k)
+{
+    int ct = 0;
+    int flag = 0;
+    int ans = -1;
+    int u = 1;
+    while (true)
+        {
+            // Check ascending
+            for (int i = !flag ? 1 : 2; i <= n; i++)
+            {
+                if (check(u) && i == m)
+                {
+                    ct++;
+                    ans = u;
+
+                    if (ct == k)
+                        return ans;
+                }
+
+                u++;
+            }
+
+            // check descending
+            for (int i = n - 1; i >= 1; i--)
+            {
+                if (check(u) && i == m)
+                {
+                    ct++;
+                    ans = u;
+                    if (ct == k)
+                        return ans;
+                }
+
+                u++;
+            }
+
+            flag = 1;
+        }
+
+        return ans;
+}
+
 int main()
 {
     int n,m,k;
@@ -16,24 +59,9 @@ int main()
 
     while (n || m || k)
     {
-        int ct = 0;
-        int q = -1;
-        for (int i = 1; ct < k; i++)
-        {
-            if (i % 2 == 0)
-                q = ((n-1) * i) + 1 - (m - 1);
-            else
-                q = (((n-1) * (i - 1)) + n) - (n - m);
-
-
-            //cout << i << ' ' << q << endl;
-            //this_thread::sleep_for(std::chrono::seconds{1});
-            if (check(q) && q >=0)
-                ct++;
-        }
-
-        cout << q << endl;
-
+        cout << calculate(n, m, k) << endl;
         cin >> n >> m >> k;
     }
+    
+    return 0;
 }

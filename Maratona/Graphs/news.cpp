@@ -1,13 +1,52 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-vector<int> adjlist[2500];
-int day, ct;
 
-void bfs(int s)
+set<int> adjlist[2505];
+
+
+vector<int> bfs(int s)
 {
-    bool visited[2500];
-    queue<int>
+    vector<int> dist(2505, -1);
+    queue<int> q;
+
+    int md = 0, max = 0, dia, u = 2504;
+
+    dist[s] = 0;
+
+    q.push(s);
+
+    while (q.size())
+    {   
+        if (dist[q.front()] > dist[u])
+        {
+            if (max > md)
+            {
+                md = max;
+                dia = dist[u];
+            }
+
+            max = 0;
+        }
+        u = q.front();
+        q.pop();
+
+        for (auto it: adjlist[u])
+        {
+            if (dist[it] == -1)
+            {
+                dist[it] = dist[u] + 1;
+                q.push(it);
+                max++;
+            }
+        }
+
+        
+
+
+    }
+
+    return {md, ++dia};
 }
 
 int main()
@@ -23,10 +62,10 @@ int main()
 
         while (n--)
         {
-            int f;
-            cin >> f;
-            adjlist[i].push_back(f);
-            adjlist[f].push_back(i);
+            int a;
+            cin >> a;
+
+            adjlist[i].insert(a);
         }
     }
 
@@ -35,11 +74,17 @@ int main()
 
     while (t--)
     {
-        ct = 0;
-        day = 0;
-        // Check each test case
-        int c;
-        cin >> c;
-        bfs(c);
+        int s;
+
+        cin >> s;
+
+        vector<int> md = bfs(s);
+
+        if (md.front() == 0)
+            cout << 0 << endl;
+        else
+            cout << md.front() << ' ' << md.back() << endl;
     }
+
+    return 0;
 }

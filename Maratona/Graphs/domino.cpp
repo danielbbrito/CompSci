@@ -1,25 +1,48 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+map<int, vector< pair<int, int> > > adjlist;
+int n, m;
+float ct;
+bool seen[505];
+
+void dfs(int b, int s)
+{
+    seen[s] = true;
+    if (b != 0)
+        ct += adjlist[b][s].second;
+
+    for (auto it: adjlist[s])
+        if (!seen[it.first])
+            dfs(s, it.first);
+    
+    return;
+}
 
 int main()
 {
-    map<char,vector<char>> adjlist;
+    cin >> n >> m;
+    int i = 1;
 
-    int n;
-    cin >> n;
-    cin.ignore();
-
-    for (int i = 1; i <= n; i++)
+    while (n || m)
     {
-        string s;
-
-        getline(cin, s);
-
-        for (int i = 0; i < s.length(); i++)
+        while (m--)
         {
-            adjlist[s[i]].push_back(s[i+1]);
-            adjlist[s[i+1]];
+            int a, b, l;
+            cin >> a >> b >> l;
+
+            adjlist[a].push_back({b, l});
         }
+
+        ct = 0;
+
+        dfs(0, 1);
+
+        printf("System #%d\nThe last domino falls after %.1f seconds, ", i, ct);
+
+
+
     }
+
+    return 0;
 }
