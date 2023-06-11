@@ -1,78 +1,69 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-map<char, vector<char>> adjlist;
-vector<char> candle;
 
-int ct;
-bool seen[256];
-char trap;
+map<int, vector<char>> adjlist;
+vector<char> minotaur;
+vector<char> theseus;
+bool seen[255];
 
-void dfs(char s, char x, int c)
+void dfs(char t, char m, int k, int ct)
 {
-    if (ct % c == 0)
+    if (ct > 1 && ct % k == 0)
     {
-        candle.push_back(s);
-        seen[s] = true;
+        cout << t << ' ';
+        seen[t] = true;
     }
 
-
-
-    ct++;
-
-    for (auto it: adjlist[s])
-    {
-        int t = 0;
-
-        if (!seen[it] && it != x)
+    for (auto it : adjlist[m])
+        if (!seen[it] && it != theseus.back())
         {
-            t++;
-            dfs(it, s, c);
+            theseus.push_back(m);
+            minotaur.push_back(it);
+            dfs(m, it, k, ct + 1);
         }
 
-        if (!t)
-        {
-            trap = it;
-            return;
-        }
-    }
+    return;
 }
+
 int main()
 {
-    char a, b, buffer;
+    char a, b;
 
     cin >> a;
 
     while (a != '#')
     {
-        memset(seen, false, sizeof(seen));
-
-        while (1)
+        cin >> b;
+        int flag = 1;
+        while (flag)
         {
-            cin >> buffer >> b;
+            if (b != '.')
+                cin >> b;
+                
             while (b != ';' && b != '.')
             {
                 adjlist[a].push_back(b);
                 cin >> b;
             }
-
-            if (b == '.') break;
-
-            cin >> a;
+            if (b != '.')
+                cin >> a >> b;
+            else
+                flag = 0;
         }
 
-        char m,s; int c;
-        cin >> m >> s >> c;
-        ct = 1;
+        char t, m;
+        int k;
 
-        dfs(m, s, c);
+        cin >> m >> t >> k;
 
-        for (auto it: candle)
-            if (it != trap)
-                cout << it << ' ';
-        
-        cout << '/' << trap << endl;
+        memset(seen, false, sizeof(seen));
+        theseus.push_back(t);
+        dfs(t, m, k, 0);
 
+        cout << '/' << minotaur.back() << endl;
+        minotaur.clear();
+        theseus.clear();
         adjlist.clear();
 
         cin >> a;
