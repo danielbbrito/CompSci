@@ -2,7 +2,7 @@ template<typename T>
 
 class StackVet {
     private:
-        int top = 0; // Keeps track of the next element to be inserted's index
+        int topo = 0; // Keeps track of the next element to be inserted's index
         T *V; // Array to store the stack elements
         int N; // Stack max size
     
@@ -14,28 +14,28 @@ class StackVet {
             N = n;
         }
 
-        bool empty() {return !top}
+        bool empty() {return !topo;}
 
-        void clear() {top = 0}
+        void clear() {topo = 0;}
 
-        T top() {return V[top - 1];}
+        T top() {return V[topo - 1];}
 
         bool push(T e)
         {
-            if (top == N) return false;
-            V[top] = e;
-            top++;
+            if (topo == N) return false;
+            V[topo] = e;
+            topo++;
             return true;
         }
 
         bool pop()
         {
-            if (top < 1) return false;
+            if (topo < 1) return false;
 
-            top--;
+            topo--;
             return true;
         }
 
-        ~StackVet() {delete V}
+        ~StackVet() {delete[] V;}
 
 };
