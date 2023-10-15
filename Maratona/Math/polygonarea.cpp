@@ -1,34 +1,45 @@
 #include <bits/stdc++.h>
-using namespace std;
 
-struct Pt {
+using namespace std;
+#define int long long
+#define double long double
+#define read(p) cin >> p.x >> p.y
+
+struct pt
+{
     int x, y;
 };
 
-#define read(p) cin >> p.x >> p.y
-#define int long long
+vector<pt> points;
 
-int cross_product(Pt s, Pt p1, Pt p2) {return (p2.x - s.x)*(p1.y - s.y) - (p2.y - s.y)*(p1.x - s.x);}
+double solve()
+{
+    double area = 0.0, x1, x2, y1, y2;
 
+    for (size_t i = 0; i < points.size() - 1; i++)
+    {
+        x1 = points[i].x;
+        x2 = points[i + 1].x;
+        y1 = points[i].y;
+        y2 = points[i + 1].y;
+
+        area += (x1 * y2 - x2 * y1);
+    }
+
+    return fabs(area);
+}
 int32_t main()
 {
-    int n;cin>>n;
-
-    vector<Pt> polygon;
+    int n;
+    cin >> n;
     while (n--)
     {
-        Pt p;
+        pt p;
         read(p);
-        polygon.push_back(p);
+
+        points.push_back(p);
     }
+    points.push_back(points.front());
 
-    int area = 0;
-
-
-    for (int i = 1; i < polygon.size() - 1; i++)
-    {
-        area += cross_product(polygon[0], polygon[i], polygon[i + 1]);
-    }
-    
-    cout << abs(area) << endl;
+    cout << (int)solve() << endl;
 }
