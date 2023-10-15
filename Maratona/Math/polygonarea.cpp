@@ -1,3 +1,7 @@
+/**
+ * The technique used in this problem is called the shoelace theorem
+ * Triangularization does not work very well for concave polygons :(
+*/
 #include <bits/stdc++.h>
 using namespace std;
 
