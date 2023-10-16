@@ -1,3 +1,7 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
 template<typename T>
 
 class Node {
@@ -22,8 +26,6 @@ class Node {
         static void destroy_node(Node<T>* p) {delete p;}
 };
 
-
-#include "node.h"
 
 template<typename T>
 
@@ -87,7 +89,6 @@ class Queue {
         }
 };
 
-#include "node.h"
 template<typename T>
 
 class Stack {
@@ -141,7 +142,26 @@ class Stack {
         
 };
 
+struct Jogador {
+    char jogador, cor;
+    Queue<char> fichas;
+};
+
 int main()
 {
+    Jogador info[4];
+    Stack<string> board[6];
     
+    for (int i = 0; i < 4; i++)
+    {
+        char j, c; cin >> j >> c;
+        info[j - 49].cor = c;
+
+        for (int i = 0; i < 11; i++)
+        {
+            char f;
+            cin >> f;
+            info[j - 49].fichas.push(f);
+        }
+    }
 }
