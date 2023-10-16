@@ -1,51 +1,60 @@
 #include "node.h"
-template<typename T>
+template <typename T>
 
-class Stack {
-    private:
-        Node<T>* top;
-        int n;
-    public:
+class Stack
+{
+private:
+    Node<T> *top;
+    int n;
 
-        Stack() {top = nullptr;n++;}
+public:
+    Stack()
+    {
+        top = nullptr;
+        n = 0;
+    }
 
-        void push(T n)
+    void push(T n)
+    {
+        Node<T> *node = Node<T>::build_node(n);
+        node->next = top; // Node pushed points to current top
+        top = node;       // Update top to point to new top node
+        n += 1;
+    }
+
+    bool pop()
+    {
+        if (top)
         {
-            Node<T>* node = Node<T>::build_node(n);
-            node->next = *top; // Node pushed points to current top
-            top = node; // Update top to point to new top node
-            n++;
+            Node<T> *current_top = top; // Stores current top so as not to lose it in memory
+
+            top = top->next; // Update top
+
+            Node<T>::destroy_node(current_top); // Destoy former top
+            n--;
+
+            return true;
         }
 
-        void pop()
-        {
-            if (top)
-            {
-                Node<T>* current_top = top; // Stores current top so as not to lose it in memory
+        return false;
+    }
 
-                top = top->next; // Update top
+    bool empty() { return !top; }
 
-                Node<T>::destroy_node(current_top); // Destoy former top
-                n--
-            }
-        }
+    void clear()
+    {
+        while (top)
+            pop();
+    }
 
-        bool empty() {return !top;}
+    T ttop()
+    {
+        T tp;
+        if (top)
+            tp = top->data;
 
-        void clear()
-        {
-            while (top)
-                pop();
-        }
+        return tp;
+    }
 
-        T top()
-        {
-            T tp;
-            if (top)
-                tp = top->data;
-            
-            return tp;
-        }
-
-        int size() {return n;}
+    int size() { return n; }
 };
