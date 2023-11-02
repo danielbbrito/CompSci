@@ -1,48 +1,59 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-map<int, vector< pair<int, int> > > adjlist;
-int n, m;
-float ct;
-bool seen[505];
-
-void dfs(int b, int s)
+map<int,set<int>> adjlist, adjt;
+vector<int> order;
+vector<int> seen;
+void dfs(int i, int pass)
 {
-    seen[s] = true;
-    if (b != 0)
-        ct += adjlist[b][s].second;
-
-    for (auto it: adjlist[s])
-        if (!seen[it.first])
-            dfs(s, it.first);
+    seen[i] = true;
     
-    return;
+    set<int> &n = pass ==1 ? adjlist[i] : adjt[i];
+    for (auto it: n)
+        if (!seen[it])
+            dfs(it, pass);
+    
+    order.push_back(i);
 }
 
 int main()
 {
-    cin >> n >> m;
-    int i = 1;
+    int t;
 
-    while (n || m)
+    cin >> t;
+    while (t--)
     {
+        order.clear();
+        int n,m;cin>>n>>m;
+
         while (m--)
         {
-            int a, b, l;
-            cin >> a >> b >> l;
-
-            adjlist[a].push_back({b, l});
+            int a, b;
+            cin >> a >> b;
+            adjlist[a].insert(b);
+            adjt[b].insert(a);
         }
 
-        ct = 0;
+        seen.assign(n + 1, false);
 
-        dfs(0, 1);
+        for (int i = 1; i <= n; i++)
+        {
+            if (!seen[i])
+                dfs(i, 1);
+        }
 
-        printf("System #%d\nThe last domino falls after %.1f seconds, ", i, ct);
+        seen.assign(n + 1, false);
+        int count = 0;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            if (!seen[order[i]])
+            {
+                dfs(i, 2);
+                count++;
+            }
+        }
 
-
-
+        cout << count << endl;
+        adjlist.clear();adjt.clear();
     }
-
-    return 0;
 }

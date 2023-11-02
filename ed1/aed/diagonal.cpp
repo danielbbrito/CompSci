@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-
+#include <algorithm>
 using namespace std;
 template<typename T>
 
@@ -48,8 +48,15 @@ class Queue {
 
             if (p)
             {
-                tail->next = p;
-                tail = p;
+                if (!head)
+                {
+                    head = tail = p;    
+                }
+                else
+                {
+                    tail->next = p;
+                    tail = p;
+                }
                 n++;
                 return true;
             }
@@ -100,12 +107,12 @@ class Stack {
 
         Stack() {top = nullptr;n = 0;}
 
-        void push(T n)
+        void push(T t)
         {
-            Node<T>* node = Node<T>::build_node(n);
+            Node<T>* node = Node<T>::build_node(t);
             node->next = top; // Node pushed points to current top
             top = node; // Update top to point to new top node
-            n += 1;
+            n++;
         }
 
         bool pop()
@@ -143,12 +150,28 @@ class Stack {
         }
 
         int size() {return n;}
+
+        T find_node(int n)
+        {
+            Node<T>* it = top;
+    
+            while (n-- && it->next)
+            {
+                it = it->next;
+            }
+
+            return it->data;
+        }
 };
 
 
+struct Pair {
+    int jogador;char cor;
+};
+
 int main()
 {
-    // Stores each player's color using stl's unordered map
+    // Stores each player's color using stl's map
     map<char, int> cores;
 
     // Creates the game board using six stacks in an array
@@ -161,13 +184,13 @@ int main()
     int qtd = 0;
     
     // Taking input
-    char j, c, t;
-    while (cin >> j >> c >> t)
+    int buff = 52;
+    while (buff--)
     {
-        fichas[j - 49].push(string() + c + t);
+        string j; cin >> j;
 
-        if (cores.find(c) == cores.end() && c != 'P')
-            cores[c] = j - 49;
+        cores[j[1]] = j[0] - 48;
+        fichas[j[0] - 49].push(string() + j[1] + j[2]);
     }
 
     // flag to keep game running
@@ -178,14 +201,14 @@ int main()
     current.push('A');
     current.push('V');
     current.push('R');
-    current.push('P');
+    current.push('B');
 
     while (run)
     {
         int jogador = cores[current.front()];
-        string ficha = fichas[jogador].front();
+        string ficha = fichas[jogador - 1].front();
         int torre = ficha[1] - 49;
-        fichas[jogador].pop();
+        fichas[jogador - 1].pop();
         
         // Handles black chips
         if (ficha[0] == 'P')
@@ -208,7 +231,7 @@ int main()
         else
         {
             int nTorre = (torre + 1) % 6;
-            while (board[nTorre].size())
+            while (board[nTorre].size() >= 6)
                 nTorre = (nTorre + 1) % 6; 
             
             board[nTorre].push(ficha);
@@ -225,33 +248,80 @@ int main()
 
     // Stores players' scores
     int score[4] = {0, 0, 0, 0};
-
+    int max = 0, p;
+    char mx;
+    Pair winners[3] = {{255,'a'}, {255, 'a'}, {255,'a'}};
     // Determine winner
     for(int i = 0; i < 6; i++)
     {
-        for (int j = i; j >= 0; j--)
+        string s = board[i].find_node(i);
+        score[cores[s[0]] - 1]++;
+        
+        if (score[cores[s[0]] - 1] > max)
         {
-            board[i].pop();
+            max = score[cores[s[0]] - 1];
+            mx = s[0];
+            p = cores[s[0]] - 1;
         }
-
-        char cor = board[i].ttop()[0];
-
-        score[cores[cor] - 1]++;
     }
+    
+    winners[0] = mx;
+    int j = 1;
+    for (int i = 0; i<4; i++)
+    {
+        if (score[i] == max && i != p && j < 4)
+        {
+            for (auto it: cores)
+                if (it.second == i + 1)
+                {
+                    winners[j] = {it.second,it.first};
+                    j++;
+                    break;
+                }
+        }
+    }
+    sort(winners, winners + 3);
+    // Output
+    cout << "Vencedores:\n" << winners[0];
 
-    int ganha = 0;
-    int maior = -1;
+    for (int i = 1; winners[i] != 'a'; i++)
+        cout << " " << winners[i];
+    
+    cout << endl;
 
     for (int i = 0; i < 4; i++)
     {
-        if (score[i] > maior)
+        cout << "Mao do jogador " << i + 1 << ":";
+        if (fichas[i].empty())
+            cout << " Vazia\n";
+        else
         {
-            maior = score[i];
-            ganha = i + 1;
+            while (!fichas[i].empty())
+            {
+                cout << ' ' << i + 1 << fichas[i].front();
+                fichas[i].pop();
+            }
+            cout << endl;
         }
     }
 
-    cout << "O jogador " << ganha << " venceu!!\n";
+    cout << "Tabuleiro final:\n";
+    int i = 0;
+    while (!board[5].empty())
+    {
+        cout << board[i].ttop()[0];
+        board[i].pop();
+        i++;
+        if (i > 5)
+        {
+            cout << endl;
+            i = 0;
+        }
+        else
+            cout << " ";
+    }
+
+    
 
     return 0;
 }
