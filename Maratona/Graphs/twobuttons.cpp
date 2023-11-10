@@ -11,21 +11,20 @@ int bfs(int n, int m)
     queue<int> q;
     q.push(n);
     dist[n] = 0;
-    
+    int i = 1;
     while (q.size())
     {
         int curr = q.front();q.pop();
-        
         if (curr == m) return dist[curr];
         
         // Try minus 1
-        if (dist[curr - 1] == -1 || dist[curr - 1] > dist[curr] + 1)
+        if (curr - 1 >= 0 && (dist[curr - 1] == -1 || dist[curr - 1] > dist[curr] + 1))
         {
             q.push(curr - 1);
             dist[curr - 1] = dist[curr] + 1;
         }
         
-        if (dist[curr * 2] == -1 || dist[curr * 2] > dist[curr] + 1)
+        if (curr * 2 >= 0 && curr * 2 <= m + (m/2) && (dist[curr * 2] == -1 || dist[curr * 2] > dist[curr] + 1))
         {
             q.push(curr * 2);
             dist[curr * 2] = dist[curr] + 1;
