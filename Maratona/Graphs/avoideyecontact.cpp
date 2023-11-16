@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int h,w;
+int h, w;
 char grid[2005][2005];
 
 void clear(int i, int j)
@@ -10,10 +10,10 @@ void clear(int i, int j)
     if (grid[i][j] == '^')
     {
         int ni = i - 1;
-        grid[i][j] = '#';
-        while (grid[ni][j] == '.')
+        grid[i][j] = '!';
+        while (ni >= 0 && (grid[ni][j] == '.' || grid[ni][j] == '!'))
         {
-            grid[ni][j] = '#';
+            grid[ni][j] = '!';
             ni--;
         }
     }
@@ -21,10 +21,10 @@ void clear(int i, int j)
     if (grid[i][j] == 'v')
     {
         int ni = i + 1;
-        grid[i][j] = '#';
-        while (grid[ni][j] == '.')
+        grid[i][j] = '!';
+        while (ni < h && (grid[ni][j] == '.' || grid[ni][j] == '!'))
         {
-            grid[ni][j] = '#';
+            grid[ni][j] = '!';
             ni++;
         }
     }
@@ -32,22 +32,22 @@ void clear(int i, int j)
     if (grid[i][j] == '>')
     {
         int nj = j + 1;
-        grid[i][j] = '#';
-        while (grid[i][nj] == '.')
+        grid[i][j] = '!';
+        while (nj < w && (grid[i][nj] == '.' || grid[i][nj] == '!'))
         {
-            grid[i][nj] = '#';
-            j++;
+            grid[i][nj] = '!';
+            nj++;
         }
     }
 
     if (grid[i][j] == '<')
     {
         int nj = j - 1;
-        grid[i][j] = '#';
-        while (grid[i][nj] == '.')
+        grid[i][j] = '!';
+        while (nj >= 0 && (grid [i][nj] == '.' || grid[i][nj] == '!'))
         {
-            grid[i][nj] = '#';
-            j--;
+            grid[i][nj] = '!';
+            nj--;
         }
     }
 }
@@ -57,10 +57,10 @@ bool isSafe(int i, int j)
     return i >= 0 && j >= 0 && i < h && j < w;
 }
 
-int bfs(pair<int,int> s, pair<int, int> e)
+int bfs(pair<int, int> s, pair<int, int> e)
 {
-    map<pair<int,int>, int> dist;
-    queue<pair<int,int>> q;
+    map<pair<int, int>, int> dist;
+    queue<pair<int, int>> q;
     int y[] = {1, 0, -1, 0};
     int x[] = {0, 1, 0, -1};
     q.push(s);
@@ -68,20 +68,22 @@ int bfs(pair<int,int> s, pair<int, int> e)
 
     while (q.size())
     {
-        pair<int, int> curr = q.front();q.pop();
+        pair<int, int> curr = q.front();
+        q.pop();
 
-        if (curr == e) return dist[e];
+        if (curr == e)
+            return dist[e];
 
         for (int i = 0; i < 4; i++)
         {
             int ni = curr.first + y[i], nj = curr.second + x[i];
 
-            if (isSafe(ni, nj) && grid[ni][nj] == '.' && (dist.find({ni, nj}) == dist.end() || dist[{ni, nj}] > dist[curr] + 1))
+            if (isSafe(ni, nj) && (grid[ni][nj] == '.' || grid[ni][nj] == 'G') && (dist.find({ni, nj}) == dist.end() || dist[{ni, nj}] > dist[curr] + 1))
             {
                 q.push({ni, nj});
                 dist[{ni, nj}] = dist[curr] + 1;
             }
-        } 
+        }
     }
 
     return -1;
@@ -90,11 +92,10 @@ int bfs(pair<int,int> s, pair<int, int> e)
 int main()
 {
     cin >> h >> w;
-    pair<int,int> s, e;
+    pair<int, int> s, e;
     for (int i = 0; i < h; i++)
-        for (int j = 0; j < h; j++)
+        for (int j = 0; j < w; j++)
             cin >> grid[i][j];
-
 
     // Clear lines of sight
     for (int i = 0; i < h; i++)
@@ -117,15 +118,9 @@ int main()
             }
         }
     }
-    for (int i = 0; i < h; i++)
-    {
-        for (int j = 0; j < w; j++)
-            cout << grid[i][j];
-        
-        cout << endl;
-    }
+
     // Run bfs
     int ans = bfs(s, e);
-    
+
     cout << ans << endl;
 }

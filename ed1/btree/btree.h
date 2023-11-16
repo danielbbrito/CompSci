@@ -84,16 +84,16 @@ class BTree {
             cout << node->key << " ";
         }
 
-        static pair<bool, T> search(TreeNode<T>* r, T k)
+        pair<bool, TreeNode<T>*> search(TreeNode<T> *r, T k)
         {
             if (!r)
             {
-                T junk;
+                TreeNode<T>* junk;
                 return {false, junk};
             }
 
             if (r->key == k)
-                return {true, r->data};
+                return {true, r};
 
             if (r->key > k)
                 return search(r->left, k);
@@ -101,12 +101,12 @@ class BTree {
             return search(r->right, k);
         }
 
-        static pair<bool, T> iterative_search(TreeNode<T>* r, T k)
+        pair<bool, TreeNode<T> *> iterative_search(TreeNode<T> *r, T k)
         {
             while (r)
             {
                 if (r->key == k)
-                    return {true, r->data};
+                    return {true, r};
 
                 else if (r->key > k)
                     r = r->left;
@@ -114,11 +114,11 @@ class BTree {
                 else r = r->right;
             }
 
-            T junk;
+            TreeNode<T>* junk;
             return {false, junk};
         }
 
-        T iterative_tree_min(TreeNode<T>* r)
+        TreeNode<T> iterative_tree_min(TreeNode<T>* r)
         {
             while (r->left)
                 r = r->left;
@@ -126,31 +126,31 @@ class BTree {
             return r->key;
         }
 
-        T tree_min(TeeNode<T>* r)
+        TreeNode<T> tree_min(TeeNode<T>* r)
         {
             if (!r->left)
-                return r->key;
+                return r;
 
             return tree_min(r->left);
         }
 
-        T iterative_tree_max(TreeNode<T>* r)
+        TreeNode<T> iterative_tree_max(TreeNode<T>* r)
         {
             while (r->right)
                 r = r->right;
             
-            return r->key;
+            return r;
         }
 
-        T tree_max(TreeNode<T>* r)
+        TreeNode<T> tree_max(TreeNode<T>* r)
         {
             if (!r->right)
-                return r->key;
+                return r;
 
             return tree_max(r->right);
         }
 
-        T successor(TreeNode<T>* r)
+        TreeNode<T> successor(TreeNode<T>* r)
         {
             if (r->right)
                 return tree_min(r->right);
@@ -207,5 +207,75 @@ class BTree {
             else if (p->key <= in->key)
                 in->left = p;
             else in->right = p;
+        }
+        
+        void clear_subtree(TreeNode<T>* r)
+        {
+            if (r->left)
+                clear_subtree(r->left);
+            
+            else if (r->right)
+                clear_subtree(r->right);
+            else
+                delete r;
+            
+        }
+
+        void transplant(TreeNode<T>* u, TreeNode<T>* v)
+        {
+            if (!u->parent)
+                root = v;
+
+            else if (u == u->parent->left)
+                u->parent->left = v;
+            
+            else if (u == u->parent->right)
+                u->parent->right = v;
+
+            if (v)
+                v->parent = u->parent;
+        }
+
+        void remover(TreeNode<T>* z)
+        {
+            if (!z->left)
+            {
+                transplant(z, z->right);
+                delete z;
+            }
+
+            else if (!z->right)
+            {
+                transplant(z, z->left);
+                delete z;
+            }
+
+            else
+            {
+                TreeNode<T> y = successor(z);
+
+                if (y != z->right)
+                {
+                    transplant(y, y->right);
+                    y->right = z->right;
+                }
+
+                swap(z->key, y->key); swap(z->data, y->data);
+                remover(z);
+
+            }
+        }
+
+        bool remove(T dt)
+        {
+            pair<bool, TreeNode<T>*> found = search(root, dt);
+
+            if (found)
+            {
+                remover(found.second);
+                return true;
+            }
+
+            return false;
         }
 };
