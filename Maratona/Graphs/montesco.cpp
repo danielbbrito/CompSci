@@ -1,55 +1,74 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-
-map<int, set<int>> adjlist;
-int seen[205];
-int zeros, uns;
-
-void dfs(int s, int color)
-{
-    if (!color)
-        zeros++;
-    else uns++;
-    seen[s] = true;
-
-    for (auto it: adjlist[s])
-        if (!seen[it])
-            dfs(it, 1-color);
-
-}
 
 int main()
 {
-    int m;
-
-    cin >> m;
-
+    int m;cin>>m;
+    vector<int> al[205];
+    vector<int> color;
     while (m--)
     {
-        adjlist.clear();
-        int n;
-        cin>>n;
-        cin.ignore();
+        for (int i = 1; i <= 205; i++) al[i].clear();
+        color.clear();
+        int n;cin>>n;
+        color.assign(n + 1, 1000000000);
 
         for (int i = 1; i <= n; i++)
         {
-            int j;
-            cin >> j;
+            int tam;cin>>tam;
 
-            while (j--)
+            while (tam--)
             {
-                int a; cin >> a;
-
-                adjlist[i].insert(a);
-                adjlist[a].insert(i);
+                int e; cin >> e;
+                al[i].push_back(e);
+                al[e].push_back(i);
             }
         }
 
-        dfs(adjlist.begin()->first, 0);
+        // Check bipartite
+        int seen[n + 1];
+        memset(seen, false, sizeof(seen));
+        int ans = 0;
+        for (int i = 1; i<=n; i++)
+        {
+            if (!seen[i])
+            {
+                queue<int> q;
+                int zero = 0, um = 0, flag = 0;
+                q.push(i);
+                color[i] = 0;
+                while (q.size())
+                {
+                    int u = q.front();q.pop();
+                    seen[u] = true;
+                    for (auto it: al[u])
+                    {
+                        if (color[it] == 1000000000)
+                        {
+                            color[it] = color[u] - 1;
+                        }
+                        else if (color[it] == color[u])
+                        {
+                            flag = 1;
+                        }
+                    }
 
-            if (uns > zeros)
-                cout << uns << endl;
-            else cout << zeros << endl;
+                    if (!flag)
+                    {
+                        for (int j = 1; j <= n; j++)
+                        {
+                            if (color[j])
+                                um++;
+                            else zero++;
+                        }
 
+                        ans += max(zero, um);
+                    }
+                }
+            }
+        }
+
+        cout << ans << endl;
     }
 }

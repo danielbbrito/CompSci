@@ -1,70 +1,62 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-const int UNVISITED = 0;
-const int VISITED = 1;
-bool cycle = false;
-vector<int> adjlist[100005];
 int n, m;
-bool seen[100005];
-stack<int> sorted;
-void cyclecheck(int u)
-{
-    seen[u] = VISITED;
+int indeg[200005];
+set<int> al[200005];
+vector<int> order;
 
-    for (auto it: adjlist[u])
+void toposort()
+{
+    priority_queue<int, vector<int>, greater<int>> pq;
+
+    for (int i = 1; i <= n; i++)
     {
-        if (seen[u] == UNVISITED)
-            cyclecheck(it);
-        else
+        if (!indeg[i]) pq.push(i);
+    }
+
+    while (pq.size())
+    {
+        int u = pq.top(); pq.pop();
+        order.push_back(u);
+
+        for (auto it: al[u])
         {
-            cycle = true;
-            return;
+            --indeg[it];
+
+            if (indeg[it] > 0) continue;
+
+            pq.push(it);
         }
     }
 }
 
-void toposort(int s)
-{
-    seen[s] = true;
-
-    for (auto it: adjlist[s])
-    {
-        if (!seen[it])
-            toposort(it);
-    }
-
-    sorted.push(s);
-}
 int main()
 {
-    cin >> n >> m;
-    int start;
+    cin>>n>>m;
+
     while (m--)
     {
         int a, b;cin>>a>>b;
-        adjlist[a].push_back(b);
-        start = a;
+        indeg[b]++;
+        al[a].insert(b);
     }
-
-    cyclecheck(1);
-    if (cycle)
+    toposort();
+    if (order.size() != n)
     {
-        cout << -1<< endl;
-        return 0;
+        cout << -1;
     }
-
-    memset(seen, false, sizeof seen);
-    toposort(start);
-
-    cout << sorted.top();
-    sorted.pop();
-
-    while (sorted.size())
+    
+    else
     {
-        cout << ' ' << sorted.top();
-        sorted.pop();
+        cout << order.front();
+    
+        for (int i = 1; i < (int)order.size(); i++)
+        {
+            cout << ' ' << order[i];
+        }
     }
 
     cout << endl;
+
 }
