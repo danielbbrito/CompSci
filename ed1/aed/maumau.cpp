@@ -10,7 +10,7 @@ class DoubleNode
 {
 private:
     T data;
-    DoubleNode<T> *next, prev;
+    DoubleNode<T>* next, prev;
 
 public:
     static DoubleNode<T> *build_node(T dt)
@@ -93,23 +93,23 @@ template <typename T>
 class CircularDoublyLinkedList
 {
 private:
-    DoubleNode<T>* iterator, head, tail;
+    DoubleNode<T>* it, head, tail;
     int n;
 
 public:
     CircularDoublyLinkedList()
     {
-        head = tail = iterator = nullptr;
+        head = tail = it = nullptr;
     }
 
     DoubleNode<T> *search(T key)
     {
-        iterator = head;
+        it = head;
 
-        while (iterator != nullptr && iterator->data != key)
-            iterator = iterator->next;
+        while (it != nullptr && it->data != key)
+            it = it->next;
 
-        return iterator;
+        return it;
     }
 
     bool push(DoubleNode<T> *y, T dt)
@@ -124,18 +124,17 @@ public:
 
         if (!head)
         {
-            head = tail = iterator = p;
+            head = tail = it = p;
+            p->next = head;
+            p->prev = tail;
             n++;
             return true;
         }
 
         p->next = y->next;
-        p->prev = y;
-
-        if (y->next)
-            y->next->prev = p;
-
+        p->next->prev = p;
         y->next = p;
+        p->prev = y;
         n++;
         return true;
     }
@@ -153,12 +152,15 @@ public:
 
         if (!head)
         {
-            head = tail = iterator = p;
+            head = tail = it = p;
+            p->next = p->prev = p;
             n++;
             return true;
         }
 
         p->next = head;
+        p->prev = head->prev;
+        p->next->prev = p;
         head->prev = p;
         head = p;
         n++;
@@ -178,14 +180,18 @@ public:
 
         if (!head)
         {
-            head = tail = iterator = p;
+            head = tail = it = p;
+            p->next = p->prev = p;
             n++;
             return true;
         }
 
-        tail->next = p;
         p->prev = tail;
+        p->next = tail->next;
+        p->next->prev = p;
+        tail->next = p;
         tail = p;
+        
         n++;
         return false;
     }
@@ -215,9 +221,11 @@ public:
     {
         DoubleNode<T> *p = head;
         head = head->next;
-        head->prev = nullptr;
+        head->prev = tail;
+        tail->next = head;
 
         DoubleNode<T>::destroy_node(p);
+        n--;
         return;
     }
 
@@ -228,16 +236,31 @@ public:
         tail = tail->prev;
         tail->next = nullptr;
         DoubleNode<T>::destroy_node(p);
+        n--;
         return;
     }
 
     T front() { return head->data; }
     T back() { return tail->data; }
-
-    void clear()
+    int size(){ return n;}
+    void itMM()
     {
-        while (head)
-            pop_front();
+        it = it->next;
+    }
+
+    void itmm()
+    {
+        it = it->prev;
+    }
+
+    void reset()
+    {
+        it = head;
+    }
+
+    T get()
+    {
+        return it->data;
     }
 };
 
@@ -539,14 +562,151 @@ public:
         return false;
     }
 };
+
 /* end data structure node definitions */
+
+/* Struct definitions */
+struct card {
+    char value, naipe;
+    int relative;
+
+    card(char v, char n)
+    {
+        value = v;
+        naipe = n;
+
+        relative = (value - 64) + abs((naipe - 51));
+    }
+
+    bool operator==(card b)
+    {
+        return this->naipe == b.naipe && this->value == b.value;
+    }
+};
+
+struct player {
+    int num;
+    vector<card> cards;
+
+    player(int n, vector<card> c)
+    {
+        num = n;
+        cards = c;
+    }
+};
+
+struct com {
+    bool operator()(card a, card b)
+    {
+        return a.relative < b.relative;
+    }
+};
+/* end struct definitions */
 
 /* Type definitions*/
 
 typedef CircularDoublyLinkedList<int> dcll; // should not be int, will create class for player
 
 /* end type definitions */
+
+/* Utility functions */
+bool compare_cards(card a, card b)
+{
+    return a.naipe == b.naipe || a.value == b.value;
+}
+
 int main()
 {
+    int n;
+    cin >> n;
 
+    for (int i = 1; i <= n; i++)
+    {
+        int j;cin>>j;
+
+        vector<card> hands[j];
+        Stack<card> monte, lixo;
+        dcll game;
+        for (int k = 0; k < j; k++)
+        {
+            game.push_back(i);
+        }
+
+        game.reset();
+
+        for (int k = 0; k < 104; k++)
+        {
+            char valor, naipe;cin>>valor>>naipe;
+            monte.push(card(valor, naipe));
+        }
+
+        // Distribute cards
+        for (int k = 0; k < j; j++)
+        {
+            for (int l = 0; l < 5; l++)
+            {
+                hands[k].push_back(monte.ttop());
+                monte.pop();
+            }
+
+            sort(hands[k].begin(), hands[k].end(), com());
+        }
+
+        int run = true;
+        bool orientation = true; // true = clockwise false = ccw
+        while (run)
+        {
+            if (lixo.empty())
+            {
+                lixo.push(hands[game.get()].back());
+                hands[game.get()].pop_back();
+            }
+
+            else
+            {
+                card atual = lixo.ttop();
+                int current_player = game.get();
+
+                for (int k = hands[current_player].size(); k >= 0; k--)
+                {
+                    if (compare_cards(atual, hands[current_player][k]))
+                    {
+                        lixo.push(hands[current_player][k]);
+                        hands[current_player].erase(hands[current_player].begin() + k);
+                    }
+                }
+
+                if (atual == lixo.ttop())
+                {
+                    // Try to play new card
+                    if (compare_cards(atual, monte.ttop()))
+                    {
+                        lixo.push(monte.ttop());
+                        monte.pop();
+                    }
+                    else
+                    {
+                        hands[current_player].push_back(monte.ttop());
+                        monte.pop();
+                        sort(hands[current_player].begin(), hands[current_player].end(), com());
+                    }
+                }
+            }
+
+            // Check if change of state is necessary
+            if (lixo.ttop().value == 12)
+            {
+                orientation = false;
+            }
+
+            else if (lixo.ttop().value == 1)
+
+            // Check if player still has cards
+            if (hands[game.get()].empty())
+            {
+                game.pop(nullptr, game.get());
+            }
+
+        }
+    }
 }
