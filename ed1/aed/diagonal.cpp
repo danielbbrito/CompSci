@@ -3,170 +3,171 @@
 #include <map>
 #include <algorithm>
 using namespace std;
-template<typename T>
+template <typename T>
 
-class Node {
-    public:
-        T data;
-        Node<T> *next;
+class Node
+{
+public:
+    T data;
+    Node<T> *next;
 
-        static Node<T>* build_node(T dt)
+    static Node<T> *build_node(T dt)
+    {
+        Node<T> *p = new Node<T>;
+
+        if (p)
         {
-            Node<T>* p = new Node<T>;
-
-            if (p)
-            {
-                p->data = dt;
-                p->next = nullptr;
-            }
-
-            return p;
+            p->data = dt;
+            p->next = nullptr;
         }
 
-        static void destroy_node(Node<T>* p) {delete p;}
+        return p;
+    }
+
+    static void destroy_node(Node<T> *p) { delete p; }
 };
 
+template <typename T>
 
-template<typename T>
+class Queue
+{
+private:
+    Node<T> *head;
+    Node<T> *tail;
+    int n;
 
-class Queue {
-    private:
-        Node<T>* head;
-        Node<T>* tail;
-        int n;
+public:
+    Queue()
+    {
+        head = tail = nullptr;
+        n = 0;
+    }
 
-    public:
-        Queue()
+    bool push(T data)
+    {
+        Node<T> *p = Node<T>::build_node(data);
+
+        if (p)
         {
-            head = tail = nullptr;
-            n = 0;
-        }
-
-        bool push(T data)
-        {
-            Node<T>* p = Node<T>::build_node(data);
-
-            if (p)
+            if (!head)
             {
-                if (!head)
-                {
-                    head = tail = p;    
-                }
-                else
-                {
-                    tail->next = p;
-                    tail = p;
-                }
-                n++;
-                return true;
+                head = tail = p;
             }
-            return false;
+            else
+            {
+                tail->next = p;
+                tail = p;
+            }
+            n++;
+            return true;
         }
+        return false;
+    }
 
-        void pop()
+    void pop()
+    {
+        Node<T> *p = head;
+        head = head->next;
+        Node<T>::destroy_node(p);
+        n--;
+    }
+
+    T front() { return head->data; }
+
+    int size() { return n; }
+
+    bool empty() { return !head; }
+
+    void clear()
+    {
+        n = 0;
+
+        while (head)
         {
-            Node<T>* p = head;
+            Node<T> *p = head;
             head = head->next;
             Node<T>::destroy_node(p);
+        }
+
+        tail = nullptr;
+    }
+
+    ~Queue()
+    {
+        clear();
+    }
+};
+
+template <typename T>
+
+class Stack
+{
+private:
+    Node<T> *top;
+    int n;
+
+public:
+    Stack()
+    {
+        top = nullptr;
+        n = 0;
+    }
+
+    void push(T t)
+    {
+        Node<T> *node = Node<T>::build_node(t);
+        node->next = top; // Node pushed points to current top
+        top = node;       // Update top to point to new top node
+        n++;
+    }
+
+    bool pop()
+    {
+        if (top)
+        {
+            Node<T> *current_top = top; // Stores current top so as not to lose it in memory
+
+            top = top->next; // Update top
+
+            Node<T>::destroy_node(current_top); // Destoy former top
             n--;
+
+            return true;
         }
 
-        T front() {return head->data;}
+        return false;
+    }
 
-        int size() {return n;}
+    bool empty() { return !top; }
 
-        bool empty() {return !head;}
+    void clear()
+    {
+        while (top)
+            pop();
+    }
 
-        void clear()
+    T ttop()
+    {
+        T tp;
+        if (top)
+            tp = top->data;
+
+        return tp;
+    }
+
+    int size() { return n; }
+
+    T find_node(int n)
+    {
+        Node<T> *it = top;
+
+        while (n-- && it->next)
         {
-            n = 0;
-
-            while (head)
-            {
-                Node<T>* p = head;
-                head = head->next;
-                Node<T>::destroy_node(p);
-            }
-
-            tail = nullptr;
+            it = it->next;
         }
 
-        ~Queue()
-        {
-            clear();
-        }
-};
-
-template<typename T>
-
-class Stack {
-    private:
-        Node<T>* top;
-        int n;
-    public:
-
-        Stack() {top = nullptr;n = 0;}
-
-        void push(T t)
-        {
-            Node<T>* node = Node<T>::build_node(t);
-            node->next = top; // Node pushed points to current top
-            top = node; // Update top to point to new top node
-            n++;
-        }
-
-        bool pop()
-        {
-            if (top)
-            {
-                Node<T>* current_top = top; // Stores current top so as not to lose it in memory
-
-                top = top->next; // Update top
-
-                Node<T>::destroy_node(current_top); // Destoy former top
-                n--;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        bool empty() {return !top;}
-
-        void clear()
-        {
-            while (top)
-                pop();
-        }
-
-        T ttop()
-        {
-            T tp;
-            if (top)
-                tp = top->data;
-            
-            return tp;
-        }
-
-        int size() {return n;}
-
-        T find_node(int n)
-        {
-            Node<T>* it = top;
-    
-            while (n-- && it->next)
-            {
-                it = it->next;
-            }
-
-            return it->data;
-        }
-};
-
-
-struct Pair {
-    int jogador;char cor;
+        return it->data;
+    }
 };
 
 int main()
@@ -182,12 +183,13 @@ int main()
 
     // Stores the amount of chips in board
     int qtd = 0;
-    
+
     // Taking input
     int buff = 52;
     while (buff--)
     {
-        string j; cin >> j;
+        string j;
+        cin >> j;
 
         cores[j[1]] = j[0] - 48;
         fichas[j[0] - 49].push(string() + j[1] + j[2]);
@@ -209,17 +211,17 @@ int main()
         string ficha = fichas[jogador - 1].front();
         int torre = ficha[1] - 49;
         fichas[jogador - 1].pop();
-        
+
         // Handles black chips
         if (ficha[0] == 'P')
-        {   
+        {
             if (!board[torre].empty())
             {
                 board[torre].pop();
                 qtd--;
             }
         }
-        
+
         // Handles tower not full
         else if (board[torre].size() < 6)
         {
@@ -232,8 +234,8 @@ int main()
         {
             int nTorre = (torre + 1) % 6;
             while (board[nTorre].size() >= 6)
-                nTorre = (nTorre + 1) % 6; 
-            
+                nTorre = (nTorre + 1) % 6;
+
             board[nTorre].push(ficha);
             qtd++;
         }
@@ -243,20 +245,19 @@ int main()
         current.pop();
         if (qtd >= 36)
             run = false;
-        
     }
 
     // Stores players' scores
     int score[4] = {0, 0, 0, 0};
     int max = 0, p;
     char mx;
-    Pair winners[3] = {{255,'a'}, {255, 'a'}, {255,'a'}};
+    pair<char, int> winners[4] = {{'A', 0}, {'V', 0}, {'R', 0}, {'B', 0}};
     // Determine winner
-    for(int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; i++)
     {
         string s = board[i].find_node(i);
         score[cores[s[0]] - 1]++;
-        
+
         if (score[cores[s[0]] - 1] > max)
         {
             max = score[cores[s[0]] - 1];
@@ -264,29 +265,29 @@ int main()
             p = cores[s[0]] - 1;
         }
     }
-    
-    winners[0] = mx;
-    int j = 1;
-    for (int i = 0; i<4; i++)
+
+    for (int i = 0; i < 4; i++)
     {
-        if (score[i] == max && i != p && j < 4)
+        if (score[cores[winners[i].first] - 1] == max)
+            winners[i].second = 1;
+    }
+
+    // Output
+    cout << "Vencedores:\n";
+    int i;
+    for (i = 0; i < 4; i++)
+    {
+        if (winners[i].second)
         {
-            for (auto it: cores)
-                if (it.second == i + 1)
-                {
-                    winners[j] = {it.second,it.first};
-                    j++;
-                    break;
-                }
+            cout << winners[i].first;
+            break;
         }
     }
-    sort(winners, winners + 3);
-    // Output
-    cout << "Vencedores:\n" << winners[0];
+    i++;
+    for (; i < 4; i++)
+        if (winners[i].second)
+            cout << ' ' << winners[i].first;
 
-    for (int i = 1; winners[i] != 'a'; i++)
-        cout << " " << winners[i];
-    
     cout << endl;
 
     for (int i = 0; i < 4; i++)
@@ -306,7 +307,7 @@ int main()
     }
 
     cout << "Tabuleiro final:\n";
-    int i = 0;
+    i = 0;
     while (!board[5].empty())
     {
         cout << board[i].ttop()[0];
@@ -320,8 +321,6 @@ int main()
         else
             cout << " ";
     }
-
-    
 
     return 0;
 }

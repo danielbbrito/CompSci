@@ -8,11 +8,9 @@ using namespace std;
 template <typename T>
 class DoubleNode
 {
-private:
-    T data;
-    DoubleNode<T>* next, prev;
-
 public:
+    T data;
+    DoubleNode<T> *next, *prev;
     static DoubleNode<T> *build_node(T dt)
     {
         DoubleNode<T> *p = new DoubleNode<T>;
@@ -33,11 +31,10 @@ public:
 template <typename T>
 class Node
 {
-private:
+public:
     T data;
     Node<T> *next;
 
-public:
     static Node<T> *build_node(T dt)
     {
         Node<T> *p = new Node<T>;
@@ -54,36 +51,6 @@ public:
     static void destroy_node(Node<T> *p) { delete p; }
 };
 
-// Tree node
-template <typename T>
-class TreeNode
-{
-private:
-    TreeNode<T> *left, right, parent;
-    T key, data;
-
-public:
-    static TreeNode<T> make_node(T k, T d)
-    {
-        TreeNode<T> *p = new TreeNode<T>;
-
-        if (p)
-        {
-            p->data = d;
-            p->key = k;
-            p->left = nullptr;
-            p->right = nullptr;
-            p->parent = nullptr;
-        }
-
-        return p;
-    }
-
-    static void destroy_node(TreeNode<T> p)
-    {
-        delete p;
-    }
-};
 /* end node class definitions */
 
 /* Data structure class definitions */
@@ -93,7 +60,7 @@ template <typename T>
 class CircularDoublyLinkedList
 {
 private:
-    DoubleNode<T>* it, head, tail;
+    DoubleNode<T> *it, *head, *tail;
     int n;
 
 public:
@@ -191,7 +158,7 @@ public:
         p->next->prev = p;
         tail->next = p;
         tail = p;
-        
+
         n++;
         return false;
     }
@@ -212,6 +179,13 @@ public:
 
         p->prev->next = p->next;
         p->next->prev = p->prev;
+        it = p->next;
+
+        if (p == head)
+            head = p->next;
+
+        if (p == tail)
+            tail = p->prev;
         DoubleNode<T>::destroy_node(p);
         n--;
         return;
@@ -234,7 +208,8 @@ public:
         DoubleNode<T> *p = tail;
 
         tail = tail->prev;
-        tail->next = nullptr;
+        tail->next = head;
+        tail->next->prev = tail;
         DoubleNode<T>::destroy_node(p);
         n--;
         return;
@@ -242,7 +217,7 @@ public:
 
     T front() { return head->data; }
     T back() { return tail->data; }
-    int size(){ return n;}
+    int size() { return n; }
     void itMM()
     {
         it = it->next;
@@ -262,6 +237,12 @@ public:
     {
         return it->data;
     }
+    bool empty() { return n == 0; }
+    void clear()
+    {
+        while (!empty())
+            pop_back();
+    }
 };
 
 // Stack
@@ -279,12 +260,12 @@ public:
         n = 0;
     }
 
-    void push(T n)
+    void push(T a)
     {
-        Node<T> *node = Node<T>::build_node(n);
+        Node<T> *node = Node<T>::build_node(a);
         node->next = top; // Node pushed points to current top
         top = node;       // Update top to point to new top node
-        n += 1;
+        n++;
     }
 
     bool pop()
@@ -314,259 +295,21 @@ public:
 
     T ttop()
     {
-        T tp;
+        T d;
         if (top)
-            tp = top->data;
+            d = top->data;
 
-        return tp;
+        return d;
     }
 
     int size() { return n; }
 };
 
-// Binary tree
-template <typename T>
-class BTree
-{
-private:
-    TreeNode<T> *root;
-    int n;
-
-public:
-    static void inorder_walk(TreeNode<T> *node)
-    {
-        if (node->left)
-            inorder_walk(node->left);
-
-        cout << node->key << " ";
-
-        if (node->right)
-            inorder_walk(node->right);
-    }
-
-    static void preorder_walk(TreeNode<T> *node)
-    {
-        cout << node->key << " ";
-
-        if (node->left)
-            preorder_walk(node->left);
-
-        if (node->right)
-            preorder_walk(node->right);
-    }
-
-    static void postorder_walk(TreeNode<T> *node)
-    {
-        if (node->left)
-            postorder_walk(node->left);
-
-        if (node->right)
-            postorder_walk(node->right);
-
-        cout << node->key << " ";
-    }
-
-    pair<bool, TreeNode<T> *> search(TreeNode<T> *r, T k)
-    {
-        if (!r)
-        {
-            TreeNode<T> *junk;
-            return {false, junk};
-        }
-
-        if (r->key == k)
-            return {true, r};
-
-        if (r->key > k)
-            return search(r->left, k);
-
-        return search(r->right, k);
-    }
-
-    pair<bool, TreeNode<T> *> iterative_search(TreeNode<T> *r, T k)
-    {
-        while (r)
-        {
-            if (r->key == k)
-                return {true, r};
-
-            else if (r->key > k)
-                r = r->left;
-
-            else
-                r = r->right;
-        }
-
-        TreeNode<T> *junk;
-        return {false, junk};
-    }
-
-    TreeNode<T> iterative_tree_min(TreeNode<T> *r)
-    {
-        while (r->left)
-            r = r->left;
-
-        return r->key;
-    }
-
-    TreeNode<T> tree_min(TreeNode<T>* r)
-    {
-        if (!r->left)
-            return r;
-
-        return tree_min(r->left);
-    }
-
-    TreeNode<T> iterative_tree_max(TreeNode<T> *r)
-    {
-        while (r->right)
-            r = r->right;
-
-        return r;
-    }
-
-    TreeNode<T> tree_max(TreeNode<T> *r)
-    {
-        if (!r->right)
-            return r;
-
-        return tree_max(r->right);
-    }
-
-    TreeNode<T> successor(TreeNode<T> *r)
-    {
-        if (r->right)
-            return tree_min(r->right);
-
-        TreeNode<T> parent = r->parent;
-
-        while (parent && r == parent->right)
-        {
-            r = parent;
-            parent = parent->parent;
-        }
-
-        return parent;
-    }
-
-    T predecessor(TreeNode<T> *r)
-    {
-        if (r->left)
-            return tree_max(r->left);
-
-        TreeNode<T> *parent = r->parent;
-
-        while (parent && r == parent->left)
-        {
-            r = parent;
-            parent = parent->parent;
-        }
-
-        return parent;
-    }
-
-    static bool insert(BTree<T> *t, T k, T dt)
-    {
-        TreeNode<T> *p = TreeNode<T>::make_node(k, dt);
-
-        if (!p)
-            return false;
-
-        TreeNode<T> *r = t->root;
-        TreeNode<T> *in = nullptr;
-        while (r)
-        {
-            in = r;
-
-            if (r->key >= p->key)
-                r = r->left; 
-            else r = r->right;
-        }
-
-        p->parent = in;
-
-        if (!in)
-            t->root = p;
-        else if (p->key <= in->key)
-            in->left = p;
-        else
-            in->right = p;
-    }
-
-    void clear_subtree(TreeNode<T> *r)
-    {
-        if (r->left)
-            clear_subtree(r->left);
-
-        else if (r->right)
-            clear_subtree(r->right);
-        else
-            delete r;
-    }
-
-    void transplant(TreeNode<T> *u, TreeNode<T> *v)
-    {
-        if (!u->parent)
-            root = v;
-
-        else if (u == u->parent->left)
-            u->parent->left = v;
-
-        else if (u == u->parent->right)
-            u->parent->right = v;
-
-        if (v)
-            v->parent = u->parent;
-    }
-
-    void remover(TreeNode<T> *z)
-    {
-        if (!z->left)
-        {
-            transplant(z, z->right);
-            delete z;
-        }
-
-        else if (!z->right)
-        {
-            transplant(z, z->left);
-            delete z;
-        }
-
-        else
-        {
-            TreeNode<T> y = successor(z);
-
-            if (y != z->right)
-            {
-                transplant(y, y->right);
-                y->right = z->right;
-            }
-
-            swap(z->key, y->key);
-            swap(z->data, y->data);
-            remover(z);
-        }
-    }
-
-    bool remove(T dt)
-    {
-        pair<bool, TreeNode<T> *> found = search(root, dt);
-
-        if (found)
-        {
-            remover(found.second);
-            return true;
-        }
-
-        return false;
-    }
-};
-
 /* end data structure node definitions */
 
 /* Struct definitions */
-struct card {
+struct card
+{
     char value, naipe;
     int relative;
 
@@ -577,25 +320,15 @@ struct card {
 
         relative = (value - 64) + abs((naipe - 51));
     }
-
+    card() {}
     bool operator==(card b)
     {
         return this->naipe == b.naipe && this->value == b.value;
     }
 };
 
-struct player {
-    int num;
-    vector<card> cards;
-
-    player(int n, vector<card> c)
-    {
-        num = n;
-        cards = c;
-    }
-};
-
-struct com {
+struct com
+{
     bool operator()(card a, card b)
     {
         return a.relative < b.relative;
@@ -605,7 +338,7 @@ struct com {
 
 /* Type definitions*/
 
-typedef CircularDoublyLinkedList<int> dcll; // should not be int, will create class for player
+typedef CircularDoublyLinkedList<int> dcll;
 
 /* end type definitions */
 
@@ -619,43 +352,50 @@ int main()
 {
     int n;
     cin >> n;
+    vector<card> hands[11];
+    Stack<card> monte, lixo;
+    dcll game;
 
     for (int i = 1; i <= n; i++)
     {
-        int j;cin>>j;
+        int j;
+        cin >> j;
 
-        vector<card> hands[j];
-        Stack<card> monte, lixo;
-        dcll game;
         for (int k = 0; k < j; k++)
         {
-            game.push_back(i);
+            game.push_back(k);
         }
-
-        game.reset();
 
         for (int k = 0; k < 104; k++)
         {
-            char valor, naipe;cin>>valor>>naipe;
+            char valor, naipe;
+            cin >> valor >> naipe;
             monte.push(card(valor, naipe));
         }
 
         // Distribute cards
-        for (int k = 0; k < j; j++)
+        for (int k = 0; k < j * 5 && monte.size(); k++)
         {
-            for (int l = 0; l < 5; l++)
+            for (int l = 0; l < j; l++)
             {
-                hands[k].push_back(monte.ttop());
+                hands[l].push_back(monte.ttop());
                 monte.pop();
             }
+        }
 
+        for (int k = 0; k < j; k++)
+        {
             sort(hands[k].begin(), hands[k].end(), com());
         }
 
-        int run = true;
+        bool run = true;
+
         bool orientation = true; // true = clockwise false = ccw
+
         while (run)
         {
+
+            bool plays = true;
             if (lixo.empty())
             {
                 lixo.push(hands[game.get()].back());
@@ -666,47 +406,112 @@ int main()
             {
                 card atual = lixo.ttop();
                 int current_player = game.get();
-
-                for (int k = hands[current_player].size(); k >= 0; k--)
+                bool flag = false;
+                for (int k = hands[current_player].size() - 1; k >= 0; k--)
                 {
                     if (compare_cards(atual, hands[current_player][k]))
                     {
                         lixo.push(hands[current_player][k]);
                         hands[current_player].erase(hands[current_player].begin() + k);
+                        flag = true;
+                        break;
                     }
                 }
 
-                if (atual == lixo.ttop())
+                if (atual == lixo.ttop() && !flag)
                 {
                     // Try to play new card
                     if (compare_cards(atual, monte.ttop()))
                     {
-                        lixo.push(monte.ttop());
-                        monte.pop();
+                        if (monte.size())
+                        {
+                            lixo.push(monte.ttop());
+                            monte.pop();
+                        }
                     }
                     else
                     {
-                        hands[current_player].push_back(monte.ttop());
-                        monte.pop();
+                        if (monte.size())
+                        {
+                            hands[current_player].push_back(monte.ttop());
+                            monte.pop();
+                        }
+
                         sort(hands[current_player].begin(), hands[current_player].end(), com());
+                        plays = false;
                     }
                 }
             }
 
-            // Check if change of state is necessary
-            if (lixo.ttop().value == 12)
+            if (plays) // The following only need to run is the player has played a card
             {
-                orientation = false;
+                // Check if player still has cards
+                if (hands[game.get()].size() == 0)
+                {
+                    game.pop(nullptr, game.get());
+                }
+
+                // Check if change of state is necessary
+                if (lixo.ttop().value == 12) // Changes orientation
+                {
+                    orientation = 0 ? orientation : 1;
+                }
+
+                else if (lixo.ttop().value == 1) // Skips next player
+                {
+                    if (orientation)
+                        game.itMM();
+                    else
+                        game.itmm();
+                }
+
+                else if (lixo.ttop().value == 7) // Next player buys two cards
+                {
+                    game.itMM();
+                    for (int l = 0; l < 2; l++)
+                    {
+                        hands[game.get()].push_back(monte.ttop());
+                        monte.pop();
+                    }
+                    sort(hands[game.get()].begin(), hands[game.get()].end(), com());
+
+                    game.itmm();
+                }
+                else if (lixo.ttop().value == 9) // Previous player buys three cards
+                {
+                    game.itmm();
+                    for (int l = 0; l < 3; l++)
+                    {
+
+                        hands[game.get()].push_back(monte.ttop());
+                        monte.pop();
+                    }
+                    sort(hands[game.get()].begin(), hands[game.get()].end(), com());
+
+                    game.itMM();
+                }
             }
 
-            else if (lixo.ttop().value == 1)
+            if (game.size() == 1)
+                run = false;
+            if (orientation)
+                game.itMM();
+            else
+                game.itmm();
 
-            // Check if player still has cards
-            if (hands[game.get()].empty())
+            if (monte.empty()) // Checks if played cards need to be emptied
             {
-                game.pop(nullptr, game.get());
+                card atual = lixo.ttop();
+                lixo.pop();
+                while (!lixo.empty())
+                {
+                    monte.push(lixo.ttop());
+                    lixo.pop();
+                }
+                lixo.push(atual);
             }
-
         }
+
+        cout << "Vencedor da partida " << i << " Jogador " << game.front() + 1 << endl;
     }
 }
