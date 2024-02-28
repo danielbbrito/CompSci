@@ -1,29 +1,31 @@
 #include <bits/stdc++.h>
 using namespace std;
-int cost = INT_MAX;;
+#define MAX 1e9
+vector<int>stone;
 
-int jumps(int s, int e, int stone[])
+vector<int> dp;
+int jumps(int s, int e, int cost)
 {
-    if (s >= e)
-    {
-        return 0;
-    }
+    if (dp[s] != MAX) return dp[s];
+    if (s == e) return cost;
+    if (s > e) return MAX;
 
-    cost = min(jumps(s + 1, e, stone) + abs(stone[s] - stone[s + 1]), jumps(s + 2, e, stone));
+    return dp[s] = (min(
+        jumps(s + 1, e, abs(stone[s+1] - stone[s])), 
+        jumps(s + 2, e, abs(stone[s+2] - stone[s]))) 
+        + cost);
 }
 
 int main()
 {
-    int n;
-    int stone[n];
-
+    int n;cin>>n;
+    stone.assign(n, MAX);
+    dp.assign(n, MAX);
     for (int i = 0; i < n; i++)
     {
         int s;cin>>s;
         stone[i] = s;
     }
 
-    jumps(0, n - 1, stone);
-
-    cout << cost << endl;
+    cout << jumps(0, n - 1, 0) << endl;
 }
