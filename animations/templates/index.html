@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph algos</title>
+</head>
+<body>
+    <h1>Visualizador de algoritmos em grafos</h1>
+    <form id="graph_info" action="/" method="post">
+        <label for="algo">Escolha seu algoritmo</label>
+        <br>
+        <select id="algo" name="algo">
+            <option value="DFS">DFS</option>
+            <option value="BFS">BFS</option>
+        </select>
+        <br>
+        <textarea id="edge_list" name="edge_list" required placeholder="Digite as arestas no formato '1 2'" form="graph_info"></textarea>
+        <br>
+        <input type="submit">
+    </form>
+</body>
+</html>
