@@ -1,107 +1,112 @@
 from random import randint
 import timeit
+import pandas as pd
 
 
 
 def main():
-    print("---ALGORITMOS DE ORDENAÇÃO---")
+    print("---ALGOTMOS DE ORDENAÇÃO---")
+
+    # Dar opções de ação sobre o vetor
+
     while True:
-        print("Escolha o tipo de geração do vetor:", "1. Aleatório", "2. Crescente", "3. Decrescente", sep="\n")
-        tipo_vetor = int(input("Escolha: "))
-        print()
-
-        tamanho_vetor = int(input("Agora, escolha o tamanho do vetor: "))
-        print()
-
-        # Criar e popular vetor baseado nos parâmetros especificados
-        vetor = []
-
-        if tipo_vetor == 1:
-            vetor = vetor_aleatorio(tamanho_vetor)
-        
-        elif tipo_vetor == 2:
-            for i in range(tamanho_vetor):
-                vetor.append(i)
-        
-        elif tipo_vetor == 3:
-            for i in range(tamanho_vetor):
-                vetor.append(tamanho_vetor - i)
-
-        # Criar backup do vetor
-        vetor_backup = vetor
-
-        # Dar opções de ação sobre o vetor
         print("Selecione uma das opções abaixo: ", "1. Imprimir vetor original", "2. Ordenar vetor", "3. Sair do programa", sep="\n")
 
         opcao = int(input("Escolha: "))
 
         if opcao == 1:
-            print(vetor)
+            print()
         
         elif opcao == 2:
-            while True:
-                vetor = vetor_backup.copy()
-                print("Qual algoritmo deseja utilizar?", 
-                    "1. Selection Sort", 
-                    "2. Bubble Sort", 
-                    "3. Insertion Sort", 
-                    "4. Merge Sort", 
-                    "5. Quick Sort", 
-                    "6. Heap Sort",
-                    "7. Nenhum, sair",
-                    sep="\n")
-
-                algo = int(input("Escolha: "))
-
                 global trocas, comparacoes
                 trocas = 0
                 comparacoes = 0
-                if algo == 1:
-                    print("\nExecutando insertion sort")
-                    time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
 
-                elif algo == 2:
-                    print("\nExecutando bubble sort")
-                    time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
+                runtime = []
+                trocou = []
+                compara = []
+
+                sizes = [100, 1000, 10000, 100000, 1000000]
+
+                for i in range (6):
+                    trocou.append([])
+                    runtime.append([])
+                    compara.append([])
+                
+                for i in range(len(sizes)):
+                    vetor = vetor_backup = vetor_aleatorio(sizes[i])
+                    if sizes[i] < 1000000:
+                        print("Running 1")
+                        time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=10) * 1000
+                        trocou[0].append(trocas)
+                        compara[0].append(comparacoes)
+                        runtime[0].append(time/10)
+                        trocas = 0
+                        comparacoes = 0
+                        vetor = vetor_backup.copy()
+                        
+                        print("Running 2")
+                        time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=10) * 1000
+                        trocou[1].append(trocas)
+                        compara[1].append(comparacoes)
+                        runtime[1].append(time/10)
+                        trocas = 0
+                        comparacoes = 0
+                        vetor = vetor_backup.copy()
+
+                        print("running 3")
+                        time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=10) * 1000
+                        trocou[2].append(trocas)
+                        compara[2].append(comparacoes)
+                        runtime[2].append(time/10)
+                        trocas = 0
+                        comparacoes = 0
+                        vetor = vetor_backup.copy()
                     
-                elif algo == 3:
-                    print("\nExecutando insertion sort")
-                    time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
-
-                elif algo == 4:
-                    print("\nExecutando merge sort")
+                    else:
+                        for i in range(3):
+                            trocou[i].append(0)
+                            compara[i].append(0)
+                            runtime[i].append(0)
+                            
+                    print("Running 4")
                     time = timeit.timeit(lambda: merge_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
-                elif algo == 5:
-                    print("\nExecutando quick sort")
+                    trocou[3].append(trocas)
+                    compara[3].append(comparacoes)
+                    runtime[3].append(time/10)
+                    trocas = 0
+                    comparacoes = 0
+                    vetor = vetor_backup.copy()
+
+                    print("Running 5")
                     time = timeit.timeit(lambda: randomized_quick_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
-                elif algo == 6:
-                    print("\nExecutando heap sort")
+                    trocou[4].append(trocas)
+                    compara[4].append(comparacoes)
+                    runtime[4].append(time/10)
+                    trocas = 0
+                    comparacoes = 0
+                    vetor = vetor_backup.copy()
+                    
+                    print("Running 6")
                     time = timeit.timeit(lambda: heap_sort(vetor, len(vetor)), number=10) * 1000
-                    print(f"Execução finalizada em {time: .4f}ms")
-                    print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
-                elif algo == 7:
-                    break
+                    trocou[5].append(trocas)
+                    compara[5].append(comparacoes)
+                    runtime[5].append(time/10)
+                    trocas = 0
+                    comparacoes = 0
+                    vetor = vetor_backup.copy()
+                
+                algos = ["Selection Sort", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort"]
+                # Print to excel
+                df_runtime = pd.DataFrame(runtime, index=algos, columns=sizes)
+                df_runtime.to_excel("random.xlsx")
 
-                print("Imprimir vetor ordenado?\n1.Sim\n2. Nao")
-                to_print = int(input("Escolha: "))
+                df_exchange = pd.DataFrame(trocou, index=algos, columns=sizes)
+                df_exchange.to_excel("exchanges.xlsx")
 
-                if to_print == 1:
-                    print(vetor)
-                else:
-                    break
+                df_compare = pd.DataFrame(compara, index=algos, columns=sizes)
+                df_compare.to_excel("compare.xlsx")
 
-
-            
             
 
         
