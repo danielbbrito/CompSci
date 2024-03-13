@@ -35,70 +35,67 @@ def main():
                 
                 for i in range(len(sizes)):
                     vetor = []
-                    print(f"Running size {sizes[i]}")
+                    print(f"running size {sizes[i]}")
                     for j in range(sizes[i]):
-                        vetor.append(j)
+                        vetor.append(sizes[i] - j)
                     
-                    vetor_backup = vetor
+                    vetor_backup = vetor.copy()
                     if sizes[i] < 1000000:
                         print("Running 1")
-                        time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=1) * 1000
                         trocou[0].append(trocas)
                         compara[0].append(comparacoes)
-                        runtime[0].append(time/10)
+                        runtime[0].append(time)
                         trocas = 0
                         comparacoes = 0
                         vetor = vetor_backup.copy()
-                        
+                        print("Running 2")
+                        time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=1) * 1000
+                        trocou[1].append(trocas)
+                        compara[1].append(comparacoes)
+                        runtime[1].append(time)
+                        trocas = 0
+                        comparacoes = 0
+                        vetor = vetor_backup.copy()
 
                         print("running 3")
-                        time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=1) * 1000
                         trocou[2].append(trocas)
                         compara[2].append(comparacoes)
-                        runtime[2].append(time/10)
+                        runtime[2].append(time)
                         trocas = 0
                         comparacoes = 0
                         vetor = vetor_backup.copy()
                     
                     else:
-                        trocou[0].append(0)
-                        compara[0].append(0)
-                        runtime[0].append(0)
-                        trocou[2].append(0)
-                        compara[2].append(0)
-                        runtime[2].append(0)
-                    print("Running 2")
-                    time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=10) * 1000
-                    trocou[1].append(trocas)
-                    compara[1].append(comparacoes)
-                    runtime[1].append(time/10)
-                    trocas = 0
-                    comparacoes = 0
-                    vetor = vetor_backup.copy() 
-
+                        for i in range(3):
+                            trocou[i].append(0)
+                            compara[i].append(0)
+                            runtime[i].append(0)
+                            
                     print("Running 4")
-                    time = timeit.timeit(lambda: merge_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
+                    time = timeit.timeit(lambda: merge_sort(vetor, 0, len(vetor) - 1), number=1) * 1000
                     trocou[3].append(trocas)
                     compara[3].append(comparacoes)
-                    runtime[3].append(time/10)
+                    runtime[3].append(time)
                     trocas = 0
                     comparacoes = 0
                     vetor = vetor_backup.copy()
 
                     print("Running 5")
-                    time = timeit.timeit(lambda: randomized_quick_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
+                    time = timeit.timeit(lambda: randomized_quick_sort(vetor, 0, len(vetor) - 1), number=1) * 1000
                     trocou[4].append(trocas)
                     compara[4].append(comparacoes)
-                    runtime[4].append(time/10)
+                    runtime[4].append(time)
                     trocas = 0
                     comparacoes = 0
                     vetor = vetor_backup.copy()
                     
                     print("Running 6")
-                    time = timeit.timeit(lambda: heap_sort(vetor, len(vetor)), number=10) * 1000
+                    time = timeit.timeit(lambda: heap_sort(vetor, len(vetor)), number=1) * 1000
                     trocou[5].append(trocas)
                     compara[5].append(comparacoes)
-                    runtime[5].append(time/10)
+                    runtime[5].append(time)
                     trocas = 0
                     comparacoes = 0
                     vetor = vetor_backup.copy()
@@ -106,13 +103,13 @@ def main():
                 algos = ["Selection Sort", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort"]
                 # Print to excel
                 df_runtime = pd.DataFrame(runtime, index=algos, columns=sizes)
-                df_runtime.to_excel("crescente.xlsx")
+                df_runtime.to_excel("decrescente.xlsx")
 
                 df_exchange = pd.DataFrame(trocou, index=algos, columns=sizes)
-                df_exchange.to_excel("exchanges_cres.xlsx")
+                df_exchange.to_excel("exchanges_decres.xlsx")
 
                 df_compare = pd.DataFrame(compara, index=algos, columns=sizes)
-                df_compare.to_excel("compare_cres.xlsx")
+                df_compare.to_excel("compare_decres.xlsx")
 
             
 
