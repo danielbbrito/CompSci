@@ -1,10 +1,11 @@
 import sys
-import numpy as np
+
 def f(x):
-    return x**4 
+    return x**4 - 12 * (x**3) + 47 * (x**2) - 60 * x
+
      
 def f_prime(x):
-    return 2e-8 - 0.8
+    return 4 * (x**3) - 36 * (x**2) + 94 * x - 60
 
 def newtons_method(x0, e):
     k = 0
@@ -25,7 +26,7 @@ def newtons_method(x0, e):
     return x0, k
 
 
-inicial = np.longdouble(input("x0 = "))
-raiz, iteracoes = newtons_method(inicial, 1e-6)
+inicial = float(input("x0 = "))
+raiz, iteracoes = newtons_method(inicial, 1e-8)
 
-print(f"Encontrada a raiz x = {raiz} em {iteracoes} iteracoes")
+print(f"Encontrada a raiz x = {raiz:.4f} em {iteracoes} iteracoes")
