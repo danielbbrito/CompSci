@@ -1,8 +1,6 @@
 from random import randint
 import timeit
 
-
-
 def main():
     print("---ALGORITMOS DE ORDENAÇÃO---")
     while True:
@@ -32,7 +30,7 @@ def main():
 
         while True:
             # Dar opções de ação sobre o vetor
-            print("Selecione uma das opções abaixo: ", "1. Imprimir vetor original", "2. Ordenar vetor", "3. Novo vetor", sep="\n")
+            print("Selecione uma das opções abaixo: ", "1. Imprimir vetor original", "2. Ordenar vetor", "3. Novo vetor", "4. Sair", sep="\n")
 
             opcao = int(input("Escolha: "))
             if opcao == 1:
@@ -58,35 +56,35 @@ def main():
                     comparacoes = 0
                     if algo == 1:
                         print("\nExecutando insertion sort")
-                        time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: selection_sort(vetor, len(vetor)), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
 
                     elif algo == 2:
                         print("\nExecutando bubble sort")
-                        time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: bubble_sort(vetor, len(vetor)), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
                         
                     elif algo == 3:
                         print("\nExecutando insertion sort")
-                        time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: insertion_sort(vetor, len(vetor)), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
 
                     elif algo == 4:
                         print("\nExecutando merge sort")
-                        time = timeit.timeit(lambda: merge_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
+                        time = timeit.timeit(lambda: merge_sort(vetor, 0, len(vetor) - 1), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
                     elif algo == 5:
                         print("\nExecutando quick sort")
-                        time = timeit.timeit(lambda: randomized_quick_sort(vetor, 0, len(vetor) - 1), number=10) * 1000
+                        time = timeit.timeit(lambda: randomized_quick_sort(vetor, 0, len(vetor) - 1), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
                     elif algo == 6:
                         print("\nExecutando heap sort")
-                        time = timeit.timeit(lambda: heap_sort(vetor, len(vetor)), number=10) * 1000
+                        time = timeit.timeit(lambda: heap_sort(vetor, len(vetor)), number=1) * 1000
                         print(f"Execução finalizada em {time: .4f}ms")
                         print(f"Foram realizadas {trocas} trocas e {comparacoes} comparações.\n")
                     elif algo == 7:
@@ -98,6 +96,7 @@ def main():
                     if to_print == 1:
                         print(vetor)
                     else:
+                        print("tudo bem :(\n")
                         break
 
 
@@ -108,12 +107,15 @@ def main():
             elif opcao == 3:
                 break
 
+            elif opcao == 4:
+                exit()
+
 
 
 def vetor_aleatorio(tam):
     v = []
     for i in range(tam):
-        v.append(randint(-9223372036854775808, 9223372036854775807))
+        v.append(randint(0, 10000))
     
     return v
 
@@ -173,11 +175,9 @@ def merge(arr, l, m, r):
     A = []
     B = []
     for i in range(size_a):
-        trocas += 1
         A.append(arr[l + i])
 
     for i in range(size_b):
-        trocas += 1
         B.append(arr[m + 1 + i])
 
     i = 0

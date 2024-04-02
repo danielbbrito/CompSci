@@ -4,6 +4,7 @@ int n, x;
 vector<int> coins;
 vector<int> value;
 vector<bool> ready;
+
 int solve(int sum)
 {
     if (sum < 0) return 1e9;
@@ -37,6 +38,6 @@ int main()
    int ans = solve(x);
 
 
-   cout << ans << endl;
+   ans != 1e9 ? cout << ans << endl : cout << -1 << endl;
    return 0;
 }
