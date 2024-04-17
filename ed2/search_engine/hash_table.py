@@ -1,24 +1,20 @@
-from math import pow
+from math import pow, floor
 
 class Node:
     def __init__(self, key, value):
         self._key = key
         self._value = value
 
-    @property
-    def key(self):
+    def get_key(self):
         return self._key
     
-    @key.setter
-    def key(self, k):
+    def set_key(self, k):
         self._key = k
 
-    @property
-    def value(self):
+    def get_value(self):
         return self._value
     
-    @value.setter
-    def value(self, v):
+    def set_value(self, v):
         self._value = v
 
 class HashTable:
@@ -31,7 +27,7 @@ class HashTable:
         # Computar a string
         key_integer = 0
         for i in range(len(key)):
-            key_integer += (ord(key[i]) - 96 * pow(31, i)) % self._size
+            key_integer += ((ord(key[i]) - 96) * pow(31, i)) % self._size
 
         return key_integer % self._size
         
@@ -46,12 +42,12 @@ class HashTable:
 
     def hash(self, key) -> int:
         for i in range(self._size):
-            pos = (self.h1(key) + i * self.h2(key)) % self._size
+            pos = floor((self.h1(key) + i * self.h2(key)) % self._size)
 
             if self.slots[pos] is None:
                 return pos
             
-            elif self.slots[pos].key() == key:
+            elif self.slots[pos].get_key() == key:
                 return pos
         return -1
         
@@ -64,16 +60,21 @@ class HashTable:
         for entry in self.slots:
             if entry is not None:
                 # Roda o procedimento de inserção
-                pos = self.hash(entry.key())
+                pos = -1
+                for i in range(self._size):
+                    pos = floor((self.h1(entry.get_key()) + i * self.h2(entry.get_key())) % self._size)
+
+                    if new_slots[pos] is None:
+                        break
 
                 if pos < 0:
-                    self.resie()
+                    self.resize()
                     return
                 
                 new_slots[pos] = entry
 
         # Atualiza a tabela hash
-        self.slots = new_slots.deepcopy()
+        self.slots = new_slots.copy()
 
         return
 
@@ -94,7 +95,7 @@ class HashTable:
         pos = self.hash(key)
 
         if pos != -1 and self.slots[pos] is not None:
-            return self.slots[pos]
+            return self.slots[pos].get_value()
         
         return None
     
