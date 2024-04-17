@@ -3,7 +3,8 @@ class Arquivo:
         self._nome = nome
         self._ocorrencias_palavra = ocorrencias_palavra
         
-
+    def __str__(self):
+        return f"Arquivo de nome {self._nome} e com {self._ocorrencias_palavra} ocorrências da palavra"
     
     def get_nome(self):
         return self._nome

@@ -27,9 +27,11 @@ def main():
                         palavra += c.lower()
 
                     else:
-                        if len(palavra) < 4:
+                        if len(palavra) <= 4:
+                            palavra = ""
                             continue
 
+                        
                         indice_busca = indice_invertido.search(palavra)
                         existe_na_tabela = False
 
@@ -41,15 +43,20 @@ def main():
                                     # Aumentar contagem da palavra no arquivo
                                     arq.set_ocorrencias_palavra(arq.get_ocorrencias_palavra() + 1)
                                     indice_invertido.insert(palavra, indice_busca)
-                                
-                                if not existe_na_tabela:
-                                    # Atualiza indice para contar mais uma palavra distinta no arquivo
-                                    registro_indice = indice.search(arquivo)
-                                    indice.insert(arquivo, registro_indice + 1)
 
-                                    # Registra primeira ocorrencia da palavra no documento
-                                    indice_busca.append(Arquivo(arquivo, 1))
-                                    indice_invertido.insert(palavra, indice_busca)
+                                
+                            if not existe_na_tabela:
+                                # Atualiza indice para contar mais uma palavra distinta no arquivo
+                                registro_indice = indice.search(arquivo) # O indice guarda mais do que deveria
+                                print(f" o indice tem tamanho {indice.occupied}")
+                                if registro_indice is not None:
+                                    indice.insert(arquivo, registro_indice + 1)
+                                else:
+                                    indice.insert(arquivo, 1)
+
+                                # Registra primeira ocorrencia da palavra no documento
+                                indice_busca.append(Arquivo(arquivo, 1))
+                                indice_invertido.insert(palavra, indice_busca)
                         
                         # Se nao existe registro da palavra no arquivo em questao
                         else:
