@@ -1,12 +1,14 @@
 import math
 from hash_table import HashTable
 from arquivo import Arquivo
+from colors import bcolors
 
 def main():
     # Ler arquivos e indexar cada palavra no indice invertido
     directory_path = "ed2/search_engine/arquivos-colecao-index/arq"
     indice_invertido = HashTable()
     indice = HashTable()
+    print("Lendo arquivos. Aguarde.")
     for i in range(1, 68):
         arquivo = None
         if i < 10:
@@ -15,10 +17,8 @@ def main():
             arquivo = str(i)
 
         arquivo = directory_path + arquivo + ".txt"
-        print(f"Lendo arquivo {arquivo}. Restam {67 - i} arquivos.")
-        with open(arquivo, mode="r") as FILE:
-            indice.insert(arquivo, 0)
 
+        with open(arquivo, mode="r") as FILE:
             for line in FILE:
                 palavra = ""
                 # This is probs wrong
@@ -48,7 +48,7 @@ def main():
                             if not existe_na_tabela:
                                 # Atualiza indice para contar mais uma palavra distinta no arquivo
                                 registro_indice = indice.search(arquivo) # O indice guarda mais do que deveria
-                                print(f" o indice tem tamanho {indice.occupied}")
+                                # print(f" o indice tem tamanho {indice.occupied}")
                                 if registro_indice is not None:
                                     indice.insert(arquivo, registro_indice + 1)
                                 else:
@@ -62,7 +62,7 @@ def main():
                         else:
                             # Atualiza indice para contar mais uma palavra distinta no arquivo
                             registro_indice = indice.search(arquivo)
-
+                        
                             if registro_indice is not None:
                                 indice.insert(arquivo, registro_indice + 1)
                             else:
@@ -73,7 +73,6 @@ def main():
                         
                         palavra = ""
                         
-
     # Implementa as buscas
     while True:
         print("Por favor, selecione um metodo de busca (1-3):")
@@ -88,6 +87,16 @@ def main():
             busca = input("Palavra de busca: ")
             busca = [busca.lower()]
 
+            flag = False
+            for pal in busca:
+                if len(pal) < 4:
+                    flag = True
+                    busca.remove(pal)
+
+            if flag:
+                print(f"{bcolors.WARNING}Sua busca contem menos de 4 letras. Tente novamente.{bcolors.ENDC}")
+                continue
+
             resultado = indice_invertido.search(busca[0])
 
             if resultado is not None:
@@ -101,50 +110,72 @@ def main():
                 # Ordenar
                 sort(resultado, relevancias)
 
-                print("Resultado da busca:")
+                print(f"{bcolors.HEADER}Resultado da busca:")
 
                 for i in range(1, len(resultado) + 1):
-                    print(f"{i}. {resultado[i].nome()}")
+                    print(f"{bcolors.OKGREEN}{i}. {resultado[i - 1].get_nome()[-9:]}")
                 
-                print()
+                print(bcolors.ENDC)
 
             else:
-                print("Nao foram encontrados resultados para a busca especificada")
+                print(f"{bcolors.FAIL}Nao foram encontrados resultados para a busca especificada{bcolors.ENDC}")
                 continue
         
         elif tipo_busca == 2:
             busca = input("Palavras separadas por espaco: ")
             busca = busca.split()
+            flag = False
+            for pal in busca:
+                if len(pal) < 4:
+                    flag = True
+                    busca.remove(pal)
 
-            set_union = []
+            if flag:
+                print(f"\n{bcolors.WARNING}Sua busca possui termos com menos de 4 letras, eles serao ignorados{bcolors.ENDC}\n")
+    
+
+            resultados = []
             for item in busca:
                 resultado = indice_invertido.search(item)
 
                 if resultado is not None:
-                    for res in resultado:
-                        if res not in set_union:
-                            set_union.append(res) # Inclui todos os items que possuam pelo menos uma das palavras da busca
-
+                    resultados.append(resultado)
+            set_union = []
+            if len(resultados) > 0:
+                sets = [set(res) for res in resultados]
+                set_union = set.union(*sets)
+                set_union = list(set_union)
+        
             if len(set_union) > 0:
                 relevancias = []
+
                 for res in set_union:
                     relevancia = get_relevance(res, indice, indice_invertido, busca)
                     relevancias.append(relevancia)
-                
+
                 sort(set_union, relevancias)
 
-                print("Resultado da busca:")
+                print(f"{bcolors.HEADER}Resultado da busca:")
 
                 for i in range(1, len(set_union) + 1):
-                    print(f"{i}. {set_union[i].nome()}")
+                    print(f"{bcolors.OKGREEN}{i}. {set_union[i - 1].get_nome()[-9:]}")
                 
-                print()
+                print(bcolors.ENDC)
             else:
-                print("Nao foram encontrados resultados para a busca especificada")
+                print(f"{bcolors.FAIL}Nao foram encontrados resultados para a busca especificada{bcolors.ENDC}")
         
         elif tipo_busca == 3:
             busca = input("Palavras separadas por espaco: ")
             busca = busca.split()
+
+            flag = False
+            for pal in busca:
+                if len(pal) < 4:
+                    flag = True
+                    busca.remove(pal)
+
+            if flag:
+                print(f"{bcolors.WARNING}Sua busca possui termos com menos de 4 letras, eles serao ignorados{bcolors.ENDC}")
 
             resultados = []
             is_possible = True
@@ -159,13 +190,14 @@ def main():
 
                 resultados.append(resultado)
 
-            set_intersection = set()
+            
+            set_intersection = []
             if is_possible:
                 # Calcular a intersecao dos conjuntos
-                set_intersection = set(resultados[0])
-
-                for i in range(1, len(resultados)):
-                    set_intersection = set_intersection.intersection(resultados[i])
+                sets = [set(res) for res in resultados]
+    
+                # Find the intersection of all sets
+                set_intersection = set.intersection(*sets)
 
                 set_intersection = list(set_intersection)
 
@@ -178,16 +210,16 @@ def main():
                 
                 sort(set_intersection, relevancias)
 
-                print("Resultado da busca:")
+                print(f"{bcolors.HEADER}Resultado da busca:")
 
                 for i in range(1, len(set_intersection) + 1):
-                    print(f"{i}. {set_intersection[i].nome()}")
+                    print(f"{bcolors.OKGREEN}{i}. {set_intersection[i - 1].get_nome()[-9:]}")
                 
-                print()
+                print(bcolors.ENDC)
 
 
             else:
-                print("Nao foram encontrados resultados para a busca especificada")
+                print(f"{bcolors.FAIL}Nao foram encontrados resultados para a busca especificada{bcolors.ENDC}")
 
         elif tipo_busca == 4:
             exit()
@@ -207,16 +239,16 @@ def get_relevance(arquivo: Arquivo, indice: HashTable, indice_invertido: HashTab
 
             fij = 0
             for res in resultado:
-                if res.nome() == arquivo.nome():
-                    fij = res.ocorrencias_palavra()
+                if res.get_nome() == arquivo.get_nome():
+                    fij = res.get_ocorrencias_palavra()
                     break
             
             ri += fij * (math.log10(67) / dj)
 
     # Buscar palavras distintas
-    qi = indice.search(arquivo.nome())
+    qi = indice.search(arquivo.get_nome())
 
-    return ri / qi
+    return 0 if qi is None else ri / qi
 
 
 def sort(arquivos, relevancias):
@@ -231,6 +263,7 @@ def sort(arquivos, relevancias):
         
         if sorted:
             break
+
 
 if __name__ == "__main__":
     main()

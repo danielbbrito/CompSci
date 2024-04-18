@@ -4,7 +4,7 @@ class Node:
     def __init__(self, key, value):
         self._key = key
         self._value = value
-
+    
     def get_key(self):
         return self._key
     
@@ -22,7 +22,7 @@ class HashTable:
         self._size = 2 # Garante que o tamnho será sempre potência de base 2
         self.slots = [None] * self._size
         self.occupied = 0
-    
+
     def h1(self, key: str):
         # Computar a string
         key_integer = 0
@@ -87,8 +87,9 @@ class HashTable:
             self.resize()
             pos = self.hash(key)
 
+        if self.slots[pos] is None:
+            self.occupied += 1
         self.slots[pos] = Node(key, value)
-        self.occupied += 1
         return
     
     def search(self, key):
