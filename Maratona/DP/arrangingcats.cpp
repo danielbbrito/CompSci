@@ -55,11 +55,13 @@ int32_t main()
         {
             if (different[i] == 1)
             {
+                bool flag = false;
                 days++;
                 for (int j = i + 1; j < n; j++)
                 {
                     if (different[j] == 2)
                     {
+                        flag = true;
                         box2[i] = 1;
                         box2[j] = 0;
                         
@@ -67,17 +69,23 @@ int32_t main()
                         different[j] = 0;
                     }
                 }
-                box2[i] = 1;
-                different[i] = 0;
+
+                if (!flag)
+                {
+                    box2[i] = 1;
+                    different[i] = 0;
+                }
             }
             
             if (different[i] == 2)
             {
+                bool flag = false;
                 days++;
                 for (int j = i + 1; j < n; j++)
                 {
                     if (different[j] == 1)
                     {
+                        flag = true;
                         box2[i] = 0;
                         box2[i] = 1;
                         different[i] = 0;
@@ -85,8 +93,11 @@ int32_t main()
                     }
                 }
                 
-                box2[i] = 0;
-                different[i] = 0;
+                if (!flag)
+                {
+                    box2[i] = 0;
+                    different[i] = 0;
+                }
             }
         }
         
