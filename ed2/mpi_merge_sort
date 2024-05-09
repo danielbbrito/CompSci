@@ -1,0 +1,125 @@
+#include <mpi.h>
+
+void merge(int *arr, int l, int m, int r) // Nao rodei, mas ta ai o codigo
+{
+    int sizeA = m - l + 1;
+    int sizeB = r - m;
+    int A[sizeA];
+    int B[sizeB];
+
+    for (int i = 0; i < sizeA; i++)
+        A[i] = arr[l + i];
+
+    for (int i = 0; i < sizeB; i++)
+        B[i] = arr[m + 1 + i];
+
+    // Perform merge
+    int i = 0;
+    int j = 0;
+    int k = l;
+
+    while (i < sizeA && j < sizeB)
+    {
+        if (A[i] <= B[j])
+        {
+            arr[k] = A[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = B[j];
+            j++;
+        }
+
+        k++;
+    }
+
+    while (i < sizeA)
+    {
+        arr[k] = A[i];
+        i++;
+        k++;
+    }
+
+    while (j < sizeB)
+    {
+        arr[k] = B[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int arr[], int l, int r)
+{
+    if (l >= r)
+        return;
+
+    int mid = (l + r) / 2;
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
+
+    merge(arr, l, mid, r);
+}
+
+int main(int argc, char** argv) 
+{
+    int numProcs, id, globalArraySize, localArraySize, height;
+    int *localArray, *globalArray;
+    double startTime, localTime, totalTime;
+    double zeroStartTime, zeroTotalTime, processStartTime, processTotalTime;;
+    int length = -1;
+    char myHostName[MPI_MAX_PROCESSOR_NAME];
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+
+    MPI_Get_processor_name (myHostName, &length); 
+
+    powerOfTwo(id, numProcs);
+
+    getInput(argc, argv, id, numProcs, &globalArraySize);
+
+    height = log2(numProcs);
+
+    
+    if (id==0){
+		globalArray = (int*) malloc (globalArraySize * sizeof(int));
+		fillArray(globalArray, globalArraySize, id);
+	}
+	
+    localArraySize = globalArraySize / numProcs;
+    localArray = (int*) malloc (localArraySize * sizeof(int));
+    MPI_Scatter(globalArray, localArraySize, MPI_INT, localArray, 
+		localArraySize, MPI_INT, 0, MPI_COMM_WORLD);
+    
+    startTime = MPI_Wtime();
+    //Merge sort (fiquei surpreso nao ser recursivo, interessante)
+    if (id == 0) {
+		zeroStartTime = MPI_Wtime();
+		globalArray = mergeSort(height, id, localArray, localArraySize, MPI_COMM_WORLD, globalArray);
+		zeroTotalTime = MPI_Wtime() - zeroStartTime;
+		printf("Processo #%d de %d em %s levou %f segundos \n", 
+			id, numProcs, myHostName, zeroTotalTime);
+	}
+	else {
+		processStartTime = MPI_Wtime();
+	        mergeSort(height, id, localArray, localArraySize, MPI_COMM_WORLD, NULL);
+		processTotalTime = MPI_Wtime() - processStartTime;
+		printf("Processo #%d de %d em %s levou %f segundos \n", 
+			id, numProcs, myHostName, processTotalTime);
+	}
+    
+    localTime = MPI_Wtime() - startTime;
+    MPI_Reduce(&localTime, &totalTime, 1, MPI_DOUBLE,
+        MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (id == 0) {
+		printf("Ordenar %d inteiros levou %f segundos \n", globalArraySize,totalTime);
+		free(globalArray);
+	}
+
+    free(localArray);  
+    MPI_Finalize();
+    return 0;
+}

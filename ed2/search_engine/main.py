@@ -27,14 +27,14 @@ def main():
                         palavra += c.lower()
 
                     else:
-                        if len(palavra) <= 4:
+                        if len(palavra) < 4:
                             palavra = ""
                             continue
 
                         
                         indice_busca = indice_invertido.search(palavra)
                         existe_na_tabela = False
-
+                        
                         if indice_busca is not None:
                             # Procurar pelo arquivo de mesmo nome
                             for arq in indice_busca:
@@ -79,6 +79,7 @@ def main():
         print("1. Busca por uma palavra")
         print("2. Busca por pelo menos uma das palavras (duas ou mais)")
         print("3. Busca por todas as palavras")
+        print("4. SAIR")
 
         tipo_busca = int(input("Escolha: "))
         print()
