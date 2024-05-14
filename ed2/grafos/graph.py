@@ -1,29 +1,46 @@
+import math
+
 class NodeColors:
     WHITE = 1
     GRAY = 2
     BLACK = 3
 
 class Graph:
-    def __init__(self, directed=False):
+    def __init__(self, directed=False, weighted=False):
         self._directed = directed
         self._adjlist = {}
         self._adjmatrix = []
+        self._weighted = weighted
 
-    def add_edge(self, node1, node2, weight=1):
-        """
-        O(1) edge insertion
-        """
-        if node1 in self._adjlist.keys():
-            self._adjlist[node1].add((node2, weight))
+    def add_edge(self, node1, node2, weight=None):
+        if self._weighted:
+            if node1 in self._adjlist.keys():
+                self._adjlist[node1].add((node2, weight))
+            else:
+                self._adjlist[node1] = set([(node2, weight)])
         else:
-            self._adjlist[node1] = set((node2, weight))
+            if node1 in self._adjlist.keys():
+                self._adjlist[node1].add(node2)
+            else:
+                self._adjlist[node1] = set([node2])
 
         
         if not self._directed:
-            if node2 in self._adjlist.keys():
-                self._adjlist[node2].add((node1, weight))
+            if self._weighted:
+                if node2 in self._adjlist.keys():
+                    self._adjlist[node2].add((node1, weight))
+                else:
+                    self._adjlist[node2] = set([(node1, weight)])
+            
             else:
-                self._adjlist[node2] = set((node1, weight))
+                if node2 in self._adjlist.keys():
+                    self._adjlist[node2].add(node1)
+                else:
+                    self._adjlist[node2] = set([node1])
+        else:
+            if node2 not in self._adjlist.keys():
+                self._adjlist[node2] = set()
+
 
     def build_adjacency_matrix(self):
         """
@@ -57,10 +74,19 @@ class Node:
         self.parent = None
         self._discovered = None
         self._finished = None
+        self._distance = math.inf
 
+    def __str__(self):
+        return str(self.label)
+    
+    def name(self):
+        return self.label
+    
     def set_parent(self, p):
         self.parent = p
-
+    def parent(self):
+        return self._parent
+    
     def discovered(self, t):
         self._discovered = t
 
@@ -75,6 +101,12 @@ class Node:
 
     def color(self):
         return self._color
+    
+    def set_distance(self, d):
+        self._distance = d
+    
+    def distance(self):
+        return self._distance
         
 
 
