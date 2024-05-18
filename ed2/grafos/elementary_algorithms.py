@@ -6,15 +6,28 @@ from graph import Graph, Node, NodeColors
 
 def main():
     weighted = int(input("Grafo valorado (1-sim 2-nao)? "))
-    graph = Graph(directed=True, weighted=True if weighted == 1 else False)
+    directed = int(input("Grafo direcionado (1-sim 2-nao)? "))
+    graph = Graph(directed=True if directed == 1 else False, 
+                  weighted=True if weighted == 1 else False)
 
     while True:
         try:
             node1 = int(input("Node 1: "))
             node2 = int(input("Node 2: "))
-            print()
             node1 = Node(node1)
             node2 = Node(node2)
+
+            if str(node1) in graph.vertices().keys():
+                node1 = graph.vertices()[str(node1)]
+            else:
+                graph.vertices()[str(node1)] = node1
+
+            if str(node2) in graph.vertices().keys():
+                node2 = graph.vertices()[str(node2)]
+            else:
+                graph.vertices()[str(node2)] = node2
+
+            print()
 
             if weighted == 1:
                 weight = float(input("Weight: "))
@@ -23,7 +36,6 @@ def main():
                 graph.add_edge(node1, node2)
         except EOFError:
             break
-
 
     print("Selecione o algoritmo para rodar:")
     print("1-BFS\n2-DFS\n3-TOPOSORT\n4-SCC\n5-Dijkstra")
@@ -45,8 +57,7 @@ def main():
         topological_sort(graph)
 
     if algo == 4:
-        # TODO
-        pass
+        strongly_connected_components(graph)
     
     if algo == 5:
         initial = int(input("Vertice de inicio: "))
@@ -74,30 +85,42 @@ def BFS(G: Graph, s: Node):
     for v in adjlist.keys():
         v.set_color(NodeColors.WHITE)
         v.discovered(math.inf)
-        v.set_parent = None
+        v.set_parent(None)
 
-    s.color(NodeColors.GRAY)
+    s.set_color(NodeColors.GRAY)
     s.discovered(0)
     s.set_parent(None)
 
-    queue = deque()
-    queue.appendleft(s)
+    queue = Queue()
+    queue.put(s)
 
-    while len(queue) > 0:
-        current = queue[0]
-        queue.pop()
+    while not queue.empty():
+        current = queue.get()
 
         for v in adjlist[current]:
-            if v.get_discovered() > current.get_discovered() + 1:
+            if v.color() == NodeColors.WHITE:
                 v.discovered(current.get_discovered() + 1)
                 v.set_parent(current)
                 v.set_color(NodeColors.GRAY)
-                queue.appendleft(v)
+                queue.put(v)
 
         
         current.set_color(NodeColors.BLACK)
 
+    for v in adjlist:
+        if v != s:
+            print(f"Caminho de {s} ate {v}: ", end="")
+            print_path(G, s, v)
+            print()
 
+def print_path(G: Graph, s: Node, v: Node):
+    if v == s:
+        print(f"{s} ", end="")
+    elif v.get_parent() is None:
+        print("Nao existe caminho")
+    else:
+        print_path(G, s, v.get_parent())
+        print(f"{v} ", end="")
 
 def DFS(G: Graph):
     # First, clear all nodes (O(V))
@@ -130,7 +153,7 @@ def dfs_run(G: Graph, u: Node, topo=False):
             v.set_parent(u)
 
             # Go deeper into the graph
-            dfs_run(G, v)
+            dfs_run(G, v, True if topo else False)
     
     # Update time and set finished time
 
@@ -163,10 +186,61 @@ def topological_sort(G: Graph):
     print(topology[0], end="")
     
     for i in range(1, len(topology)):
-        print(f" -> {topology[i]}", end="")
+        print(f" {topology[i]}", end="")
     print()
 
+def strongly_connected_components(G: Graph):
+    adjlist = G.get_adjlist()
+
+    global finish_times
+    finish_times = []
+    for v in adjlist:
+        if v.color() == NodeColors.WHITE:
+            scc_dfs(G, v, 1)
+
+    # Compute transpose
+    GT = Graph(directed=True, weighted=False)
+    for v in adjlist:
+        for u in adjlist[v]:
+            GT.add_edge(u, v)
+
+    for v in GT.get_adjlist():
+        v.set_color(NodeColors.WHITE)
     
+    global SCC
+    SCC = []
+    i = 0
+    for v in finish_times:
+        if v.color() == NodeColors.WHITE:
+            i += 1
+            scc_dfs(GT, v, 2)
+            print(f"SCC #{i}:", end="")
+            for node in SCC:
+                print(f" {node}", end="")
+            print()
+
+            SCC.clear()
+
+def scc_dfs(G: Graph, u: Node, p: int):
+
+    u.set_color(NodeColors.GRAY)
+
+    for v in G.get_adjlist()[u]:
+        if v.color() == NodeColors.WHITE:
+            # Set parent of the next node to visit
+            v.set_parent(u)
+
+            # Go deeper into the graph
+            scc_dfs(G, v, p)
+    
+    u.set_color(NodeColors.BLACK)
+
+    if p == 1:
+        finish_times.insert(0, u)
+    
+    if p == 2:
+        SCC.insert(0, u)
+
 
 def dijkstra(G: Graph, s: Node):
     """

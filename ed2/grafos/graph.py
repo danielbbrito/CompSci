@@ -10,8 +10,15 @@ class Graph:
         self._directed = directed
         self._adjlist = {}
         self._adjmatrix = []
+        self._vertexlist = {} # Guarda o label e o objeto associado
         self._weighted = weighted
 
+    def add_vertex(self, node):
+        self._vertexlist[str(node)] = node
+
+    def vertices(self):
+        return self._vertexlist
+    
     def add_edge(self, node1, node2, weight=None):
         if self._weighted:
             if node1 in self._adjlist.keys():
@@ -63,15 +70,27 @@ class Graph:
         """
             Creates a string representation of the adjacency list
         """
+        string = ""
+        for v in self._adjlist:
+            string += f"{v} ->"
 
-        return str(self._adjlist)
+            if self._weighted:
+                for u, w in self._adjlist[v]:
+                    string += f" ({u}, {w})"
+            else:
+                for u in self._adjlist[v]:
+                    string += f" {u}"
+            
+            string += "\n"
+
+        return string
 
 
 class Node:
     def __init__(self, label):
         self.label = label
         self._color = NodeColors.WHITE
-        self.parent = None
+        self._parent = None
         self._discovered = None
         self._finished = None
         self._distance = math.inf
@@ -79,12 +98,19 @@ class Node:
     def __str__(self):
         return str(self.label)
     
+    def __eq__(self, other):
+        return isinstance(other, Node) and self.label == other.label
+    
+    def __hash__(self):
+        return hash(self.label)
+    
     def name(self):
         return self.label
     
     def set_parent(self, p):
-        self.parent = p
-    def parent(self):
+        self._parent = p
+
+    def get_parent(self):
         return self._parent
     
     def discovered(self, t):
