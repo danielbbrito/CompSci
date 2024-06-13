@@ -122,6 +122,8 @@ class Node:
     def finished(self, t):
         self._finished = t
 
+    def get_finished(self):
+        return self._finished
     def set_color(self, c):
         self._color = c
 
