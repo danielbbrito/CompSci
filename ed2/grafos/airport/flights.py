@@ -220,8 +220,7 @@ def main():
                     flight_object = Flight(f"{flight}2")
                     flight_object.set_origin(intermediate)
                     flight_object.set_takeoff_time(line[i + 2])
-                    time = time_difference(line[i + 1], line[i + 2])
-                    graph.add_edge(intermediate, flight_object, time)
+                    graph.add_edge(intermediate, flight_object, 0)
 
                     intermediates = True
                   
@@ -241,30 +240,7 @@ def main():
             else:
                 time = time_difference(takeoff, landing)
 
-            graph.add_edge(flight_object, destination, time)
-
-
-
-            # # Calculate flight weight and find intermediate airports
-            # times = [takeoff]
-            # intermediates = []
-            # for i in range(4, len(line)):
-            #     if line[i][0].isdigit():
-            #         times.append(line[i].replace("\n", ""))
-            
-            # for i in range(3, len(line) - 2):
-            #     if line[i][0].isalpha():
-            #         intermediates.append((line[i], line[i+1], line[i+2]))
-            
-            # flight.set_intermediates(intermediates)
-
-            # duration = 0
-            # for i in range(1, len(times)):
-            #     duration += time_difference(times[i - 1], times[i])
-
-            # # Populate graph
-            # graph.add_edge(origin, flight, 0)
-            # graph.add_edge(flight, destination, duration)         
+            graph.add_edge(flight_object, destination, time)      
 
     # Read origin and destination cities
     while True:
@@ -301,15 +277,11 @@ def main():
         
         for flight in flight_list:
             label = flight.get_label()
-            print(label, end=" ")
+            print(label[:len(label) - 1], end=" ")
 
             origin = flight.get_origin()
             takeoff = flight.get_takeoff_time()
             print(origin, takeoff, end=" ")
-            intermediates = flight.get_intermediates()
-
-            for intermediate, t, a in intermediates:
-                print(intermediate, t, a, end=" ")
 
             destination = flight.get_destination()
             landing = flight.get_arrival_time()
@@ -336,7 +308,6 @@ def dijkstra(graph: Graph, start: City, end: City):
     visited = {}
 
     for v in adjlist.keys():
-        #print(v)
         visited[v] = False
     start.set_arrival_time(None)
     pq = PriorityQueue()
@@ -353,9 +324,10 @@ def dijkstra(graph: Graph, start: City, end: City):
 
         visited[u] = True
         for v, w in adjlist[u]:
-            # print(u, v)
             if isinstance(u, City):
+            
                 time_weight = time_difference(u.get_arrival_time(), v.get_takeoff_time())
+                
                 if v.get_distance() > u_dist + time_weight and (time_weight >= 30 or (time_weight == 0 and u == start)):
                     v.set_distance(u_dist + time_weight)
                     v.set_parent(u)
@@ -365,6 +337,7 @@ def dijkstra(graph: Graph, start: City, end: City):
                 if v.get_distance() > u_dist + w:
                     v.set_distance(u_dist + w)
                     v.set_parent(u)
+                    v.set_arrival_time(u.get_arrival_time())
                     pq.put((v.get_distance(), v))
 
     return False
@@ -379,7 +352,11 @@ def time_difference(start, end):
     st = int(start_hours) * 60 + int(start_minutes)
     ed = int(end_hours) * 60 + int(end_minutes)
 
-    difference = abs(ed - st)
+    if ed >= st:
+        difference = ed - st
+    else:
+        # If the end time is on the next day
+        difference = (24 * 60 - st) + ed
 
     return difference
 
