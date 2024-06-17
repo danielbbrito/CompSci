@@ -170,6 +170,13 @@ class Flight(Node):
 class City(Node):
     def __init__(self, label):
         super().__init__(label)
+        self._arrival_time = None
+
+    def set_arrival_time(self, t):
+        self._arrival_time = t
+    
+    def get_arrival_time(self):
+        return self._arrival_time
 
 
 def main():
@@ -304,9 +311,10 @@ def dijkstra(graph: Graph, start: City, end: City):
 
         visited[u] = True
         for v, w in adjlist[u]:
-            if v.get_distance() > u_dist + w:
+            if v.get_distance() > u_dist + w: # Modificar relaxamento para aceitar a diferença de horarios de chegada e saida
                 v.set_distance(u_dist + w)
                 v.set_parent(u)
+                # Aqui verificar se é cidade e se for adicionar horario de chegada
                 pq.put((v.get_distance(), v))
 
     return False
