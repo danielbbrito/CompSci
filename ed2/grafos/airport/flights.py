@@ -131,7 +131,6 @@ class Flight(Node):
         super().__init__(label)
         self._origin = None
         self._destination = None
-        self._intermediates = []
         self._takeoff_time = takeoff_time
         self._arrival_time = arrival_time
     
@@ -159,14 +158,6 @@ class Flight(Node):
     def get_destination(self):
         return self._destination
     
-    def add_intermediate(self, i):
-        self._intermediates.append(i)
-
-    def set_intermediates(self, i):
-        self._intermediates = i
-
-    def get_intermediates(self):
-        return self._intermediates
 
 class City(Node):
     def __init__(self, label):
