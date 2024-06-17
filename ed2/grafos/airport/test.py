@@ -2,7 +2,6 @@ import math
 import datetime
 from queue import PriorityQueue
 
-# Lidar com voos intermediarios
 
 class Graph:
     def __init__(self, directed=False, weighted=False):
@@ -184,10 +183,10 @@ def main():
     graph = Graph(True, True)
 
     # Read flight information file
-    with open("ed2/grafos/airport/cmp1099-trabalho-grafo_dijkstra-arquivo_voos.txt", "r+") as FILE:
+    with open("/Users/danieldebrito/Documents/CompSci/ed2/grafos/airport/cmp1099-trabalho-grafo_dijkstra-arquivo_voos.txt", "r+") as FILE:
         for line in FILE:
             line = line.split(" ")
-            flight = line[0]
+            flight = Flight(line[0])
             
             origin = City(line[1])
 
@@ -195,76 +194,36 @@ def main():
                 if v == origin:
                     origin = v
                     break
-            takeoff = line[2]
 
-            flight_object = Flight(f"{flight}1")
-            flight_object.set_origin(origin)
-            flight_object.set_takeoff_time(takeoff)
-            graph.add_edge(origin, flight_object, 0)
-
-            # Handle intermediate cities
-            intermediates = False
-            for i in range(2, len(line) - 2):
-                if line[i][0].isalpha():
-                    intermediate = City(line[i])
-                    for v in graph.get_adjlist():
-                        if v == intermediate:
-                            intermediate = v
-                            break
-                    
-                    flight_object.set_destination(intermediate)
-                    flight_object.set_arrival_time(line[i + 1])
-                    time = time_difference(line[i - 1], line[i + 1])
-                    graph.add_edge(flight_object, intermediate, time)
-
-                    flight_object = Flight(f"{flight}2")
-                    flight_object.set_origin(intermediate)
-                    flight_object.set_takeoff_time(line[i + 2])
-                    time = time_difference(line[i + 1], line[i + 2])
-                    graph.add_edge(intermediate, flight_object, time)
-
-                    intermediates = True
-                  
             destination = City(line[len(line) - 2])
-            for v in graph.get_adjlist():
-                if v == destination:
-                    destination = v
-                    break
-
+            takeoff = line[2]
             landing = line[len(line) - 1]
+            flight.set_origin(origin)
+            flight.set_destination(destination)
+            flight.set_takeoff_time(takeoff)
+            flight.set_arrival_time(landing)
+
+
+            # Calculate flight weight and find intermediate airports
+            times = [takeoff]
+            intermediates = []
+            for i in range(4, len(line)):
+                if line[i][0].isdigit():
+                    times.append(line[i].replace("\n", ""))
             
-            flight_object.set_destination(destination)
-            flight_object.set_arrival_time(landing)
-
-            if intermediates:
-                time = time_difference(line[len(line) - 3], landing)
-            else:
-                time = time_difference(takeoff, landing)
-
-            graph.add_edge(flight_object, destination, time)
-
-
-
-            # # Calculate flight weight and find intermediate airports
-            # times = [takeoff]
-            # intermediates = []
-            # for i in range(4, len(line)):
-            #     if line[i][0].isdigit():
-            #         times.append(line[i].replace("\n", ""))
+            for i in range(3, len(line) - 2):
+                if line[i][0].isalpha():
+                    intermediates.append((line[i], line[i+1], line[i+2]))
             
-            # for i in range(3, len(line) - 2):
-            #     if line[i][0].isalpha():
-            #         intermediates.append((line[i], line[i+1], line[i+2]))
-            
-            # flight.set_intermediates(intermediates)
+            flight.set_intermediates(intermediates)
 
-            # duration = 0
-            # for i in range(1, len(times)):
-            #     duration += time_difference(times[i - 1], times[i])
+            duration = 0
+            for i in range(1, len(times)):
+                duration += time_difference(times[i - 1], times[i])
 
-            # # Populate graph
-            # graph.add_edge(origin, flight, 0)
-            # graph.add_edge(flight, destination, duration)         
+            # Populate graph
+            graph.add_edge(origin, flight, 0)
+            graph.add_edge(flight, destination, duration)         
 
     # Read origin and destination cities
     while True:
@@ -336,9 +295,8 @@ def dijkstra(graph: Graph, start: City, end: City):
     visited = {}
 
     for v in adjlist.keys():
-        #print(v)
         visited[v] = False
-    start.set_arrival_time(None)
+
     pq = PriorityQueue()
     pq.put((start.get_distance(), start))
 
@@ -353,26 +311,15 @@ def dijkstra(graph: Graph, start: City, end: City):
 
         visited[u] = True
         for v, w in adjlist[u]:
-            # print(u, v)
-            if isinstance(u, City):
-                time_weight = time_difference(u.get_arrival_time(), v.get_takeoff_time())
-                if v.get_distance() > u_dist + time_weight and (time_weight >= 30 or (time_weight == 0 and u == start)):
-                    v.set_distance(u_dist + time_weight)
-                    v.set_parent(u)
-                    pq.put((v.get_distance(), v))
-
-            elif isinstance(u, Flight):
-                if v.get_distance() > u_dist + w:
-                    v.set_distance(u_dist + w)
-                    v.set_parent(u)
-                    pq.put((v.get_distance(), v))
+            if v.get_distance() > u_dist + w: # Modificar relaxamento para aceitar a diferença de horarios de chegada e saida
+                v.set_distance(u_dist + w)
+                v.set_parent(u)
+                # Aqui verificar se é cidade e se for adicionar horario de chegada
+                pq.put((v.get_distance(), v))
 
     return False
 
 def time_difference(start, end):
-    if start is None or end is None:
-        return 0
-    
     start_hours, start_minutes = start.split(":")
     end_hours, end_minutes = end.split(":")
 
