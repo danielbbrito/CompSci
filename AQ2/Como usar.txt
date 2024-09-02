@@ -1,0 +1,5 @@
+compilar com o comando:
+mpicc -o mpicompress mpicompress.c -lz
+
+Executar com o comando
+mpirun -np <numerodeprocessos> ./mpicompress <entrada.txt> <saída.zlib>
