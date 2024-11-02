@@ -88,18 +88,18 @@ def main():
     s = time.time()
     x = lu(A, b)
     e = time.time()
-    print("Solução:", x)
+    print("x = ", x)
     print("Tempo de execução para a fatoração LU:", e - s, "segundos")
 
     # Medir a regra de cramer
     s = time.time()
     x = cramer(A, b)
     e = time.time()
-    print("Solução:", x)
+    print("x = ", x)
     print("Tempo de execução para a regra de cramer:", e - s, "segundos")
 
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
 
 

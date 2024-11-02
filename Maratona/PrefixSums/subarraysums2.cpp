@@ -2,6 +2,22 @@
 
 using namespace std;
 
+int bs(int l, int r, int target, int arr[])
+{
+    if (l > r)
+        return -1;
+
+    int mid = (l + r) / 2;
+
+    if (target < arr[mid])
+        return bs(l, mid - 1, target, arr);
+
+    if (target > arr[mid])
+        return bs(mid + 1, r, target, arr);
+
+    return mid;
+}
+
 int main()
 {
     int n, x, ans, last;
@@ -22,20 +38,10 @@ int main()
     }
 
     ans = 0;
-    last = 1;
     for (int i = 1; i < n + 1; i++)
     {
-        if (i >= x)
-        {
-            for (int j = last; j <= i; j++)
-            {
-                if (prefix[i] - prefix[j - 1] == x)
-                {
-                    ans++;
-                    last = j;
-                }
-            }
-        }
+        if (bs(1, i, prefix[i] - x, prefix) != -1)
+            ans++;
     }
 
     cout << ans << endl;
