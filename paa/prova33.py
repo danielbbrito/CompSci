@@ -43,28 +43,61 @@ def kruskal(graph):
 
     return mst
 
+def print_output(matrix, labels):
+
+    print("     " + "   ".join(labels))
+    print("  " + "-" * (5 + 7 * len(labels)))
+    
+    for i, row in enumerate(matrix):
+        row_str = " ".join(f"{cell:4}" for cell in row)
+        print(f"{labels[i]:2} | {row_str}")
+
+def build_output(mst, vertices):
+    size = len(vertices)
+
+    matrix = [[0] * size for _ in range(size)]
+
+    vertex_map = {v: i for i, v in enumerate(vertices)}
+
+    for weight, node1, node2 in mst:
+        i, j = vertex_map[node1], vertex_map[node2]
+        matrix[i][j] = weight
+        matrix[j][i] = weight  
+
+    return matrix
+
 def main():
     V = ["L", "CM", "NY", "Pa", "Pe", "T"]
     E = [
-    (5558, "L", "CM"), (5558, "CM", "L"),  
-    (3469, "L", "NY"), (3469, "NY", "L"),  
-    (214, "L", "Pa"), (214, "Pa", "L"),    
-    (5074, "L", "Pe"), (5074, "Pe", "L"),  
-    (5959, "L", "T"), (5959, "T", "L"),    
-    (2090, "CM", "NY"), (2090, "NY", "CM"),
-    (5725, "CM", "Pa"), (5725, "Pa", "CM"),
-    (7753, "CM", "Pe"), (7753, "Pe", "CM"),
-    (7035, "CM", "T"), (7035, "T", "CM"),  
-    (3636, "NY", "Pa"), (3636, "Pa", "NY"),
-    (6844, "NY", "Pe"), (6844, "Pe", "NY"),
-    (6757, "NY", "T"), (6757, "T", "NY"),  
-    (5120, "Pa", "Pe"), (5120, "Pe", "Pa"),
-    (6053, "Pa", "T"), (6053, "T", "Pa"),  
-    (1307, "Pe", "T"), (1307, "T", "Pe")
-]
+        (5558, "L", "CM"), (5558, "CM", "L"),  
+        (3469, "L", "NY"), (3469, "NY", "L"),  
+        (214, "L", "Pa"), (214, "Pa", "L"),    
+        (5074, "L", "Pe"), (5074, "Pe", "L"),  
+        (5959, "L", "T"), (5959, "T", "L"),    
+        (2090, "CM", "NY"), (2090, "NY", "CM"),
+        (5725, "CM", "Pa"), (5725, "Pa", "CM"),
+        (7753, "CM", "Pe"), (7753, "Pe", "CM"),
+        (7035, "CM", "T"), (7035, "T", "CM"),  
+        (3636, "NY", "Pa"), (3636, "Pa", "NY"),
+        (6844, "NY", "Pe"), (6844, "Pe", "NY"),
+        (6757, "NY", "T"), (6757, "T", "NY"),  
+        (5120, "Pa", "Pe"), (5120, "Pe", "Pa"),
+        (6053, "Pa", "T"), (6053, "T", "Pa"),  
+        (1307, "Pe", "T"), (1307, "T", "Pe")
+    ]
+    
     graph = [V, E]
     mst = kruskal(graph)
-    print(mst)
+    
+    mst_matrix = build_output(mst, V)
+    
+    print_output(mst_matrix, V)
+
+    weigth = 0
+    for w, n1, n2 in mst:
+        weigth += w
+    print()
+    print(f"Peso total das arestas: {weigth}")
 
 if __name__ == "__main__":
     main()
