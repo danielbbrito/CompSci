@@ -88,7 +88,7 @@ def main():
     print("Selection Sort: ")
     v1000c = v1000.copy()
     st = time.time()
-    selection_sort(v1000c, 10)
+    selection_sort(v1000c, 1000)
     ed = time.time()
     print(f"    Tempo de execucao: {(ed - st) * 1000}ms")
     print()
