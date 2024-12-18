@@ -1,0 +1,20 @@
+\documentclass[preview]{standalone}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\begin{center}
+\textbf{Processo de Relaxamento:}
+            \begin{itemize}
+                \item Examinar todas as arestas adjacentes de um vértice.
+                \item Atualizar a distância mais curta se uma aresta melhora o caminho.
+                \item Repete para todos os vértices conforme o algoritmo.
+            \end{itemize}
+            
+            \textbf{Complexidade:}
+            \begin{itemize}
+                \item Dijkstra com Heap Binária: $O((V + E) \cdot \log V)$
+                \item Bellman-Ford: $O(V \cdot E)$
+            \end{itemize}
+\end{center}
+\end{document}

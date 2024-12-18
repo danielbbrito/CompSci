@@ -1,0 +1,20 @@
+\documentclass[preview]{standalone}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\begin{center}
+\textbf{Relaxamento de Arestas:} $O(E \cdot \log V)$
+            \begin{itemize}
+                \item Cada aresta é relaxada uma única vez durante o algoritmo.
+                \item Relaxar uma aresta pode levar a uma atualização na fila de prioridade.
+                \item Atualização na fila de prioridade custa $O(\log V)$.
+            \end{itemize}
+            
+            \textbf{Por que $O(E \cdot \log V)$?}
+            \begin{itemize}
+                \item Para $E$ arestas, cada relaxamento custa $O(\log V)$.
+                \item Total de $E$ operações de relaxamento.
+            \end{itemize}
+\end{center}
+\end{document}

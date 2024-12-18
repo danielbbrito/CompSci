@@ -1,0 +1,5 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/danieldebrito/Documents/CompSci/paa/media/videos/p4/1080p60/partial_movie_files/SlideFour/3977891868_4203181578_223132457.mp4'
+file 'file:/Users/danieldebrito/Documents/CompSci/paa/media/videos/p4/1080p60/partial_movie_files/SlideFour/2852726489_1615857071_1342974483.mp4'
+file 'file:/Users/danieldebrito/Documents/CompSci/paa/media/videos/p4/1080p60/partial_movie_files/SlideFour/2852726489_3395234483_1473211559.mp4'
+file 'file:/Users/danieldebrito/Documents/CompSci/paa/media/videos/p4/1080p60/partial_movie_files/SlideFour/2852726489_1733944848_3585098307.mp4'

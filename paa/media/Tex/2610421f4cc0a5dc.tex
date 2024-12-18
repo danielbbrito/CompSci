@@ -1,0 +1,24 @@
+\documentclass[preview]{standalone}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\begin{center}
+\textbf{Complexidade Total:} $O((V + E) \cdot \log V)$
+            \begin{itemize}
+                \item A complexidade total é a soma das complexidades das operações:
+                    \begin{itemize}
+                        \item Inicialização: $O(V)$
+                        \item Extrair Mínimo: $O(V \cdot \log V)$
+                        \item Relaxamento de Arestas: $O(E \cdot \log V)$
+                    \end{itemize}
+                \item O termo dominante depende da estrutura do grafo:
+                    \begin{itemize}
+                        \item Para grafos esparsos ($E \approx V$), a complexidade é $O(V \cdot \log V)$.
+                        \item Para grafos densos ($E \approx V^2$), a complexidade é $O(E \cdot \log V)$.
+                    \end{itemize}
+            \end{itemize}
+            
+            \textbf{Conclusão:} A complexidade total é $O((V + E) \cdot \log V)$, combinando o custo da inicialização, extração mínima e relaxamento de arestas.
+\end{center}
+\end{document}

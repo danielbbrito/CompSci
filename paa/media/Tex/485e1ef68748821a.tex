@@ -1,0 +1,24 @@
+\documentclass[preview]{standalone}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\begin{center}
+\textbf{Complexidade Total:} $O((|V| + |E|) \cdot \log |V|)$
+            \begin{itemize}
+                \item A complexidade total é a soma das complexidades das operações:
+                    \begin{itemize}
+                        \item Inicialização: $O(|V|)$
+                        \item Extrair Mínimo: $O(|V| \cdot \log |V|)$
+                        \item Relaxamento de Arestas: $O(|E| \cdot \log |V|)$
+                    \end{itemize}
+            \end{itemize}
+                        
+            \vspace{1cm}
+            
+            \textbf{Portanto:}
+            \[
+            O(|V|) + O(|V| \cdot \log |V|) + O(|E| \cdot \log |V|) = O((|V| + |E|) \cdot \log |V|)
+            \]
+\end{center}
+\end{document}

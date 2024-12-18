@@ -6,7 +6,33 @@ class ShortestPathPresentation(Slide):
         # Slide 1: Título e Objetivo
         title = Text("Caminho de menor duração de voos entre duas cidades", font_size=36)
         subtitle = Text("Daniel Ribeiro de Brito", font_size=24).next_to(title, DOWN)
+        # Slide 1: Título e Objetivo
+        title = Text("Caminho de menor duração de voos entre duas cidades", font_size=36)
+        subtitle = Text("Daniel Ribeiro de Brito", font_size=24).next_to(title, DOWN)
         self.play(Write(title), Write(subtitle))
+        self.wait()  # Wait indefinitely until manually advanced
+
+        # Slide 2: Definição do Problema
+        self.clear()  # Clear previous slide contents
+        problem_title = Text("Definição do Problema", font_size=32)
+        problem_text = Text(
+            "Dado um conjunto de dados contendo voos:\n"
+            "1. Cada voo conecta duas cidades, com possíveis conexões.\n"
+            "2. Possui horários de partida e chegada.\n"
+            "Objetivo: Encontrar o caminho mais curto entre uma origem A e um destino B.",
+            font_size=24,
+            line_spacing=1.5
+        ).scale(0.7).next_to(problem_title, DOWN, buff=0.5)
+        
+        self.play(Write(problem_title), Write(problem_text))
+        self.wait()  # Wait indefinitely
+
+        title = Text("Complexidade do Algoritmo de Dijkstra", font_size=50).to_edge(UP)
+        
+        title = Text("Fase de Inicialização", font_size=50).to_edge(UP)
+        
+        # Initialization Details
+        init_details = Tex(
         self.wait()  # Wait indefinitely until manually advanced
 
         # Slide 2: Definição do Problema
@@ -62,7 +88,41 @@ class ShortestPathPresentation(Slide):
         self.play(Write(init_details))
         self.play(Create(vertex_group), Write(source_label), Write(other_label))
         self.wait()
+            \textbf{Passos de Inicialização:}
+            \begin{itemize}
+                \item Definir distâncias iniciais: $O(V)$
+                \item Criar fila de prioridade: $O(V)$
+                \item Vértice fonte: distância $0$
+                \item Outros vértices: distância $\infty$
+            \end{itemize}
+            
+            \textbf{Complexidade:} $O(V)$
+            """, 
+            font_size=35
+        ).next_to(title, DOWN)
+        
+        # Visualization of Initialization
+        vertex_group = VGroup()
+        for i in range(5):
+            vertex = Circle(radius=0.3, color=BLUE)
+            vertex.shift(RIGHT * i)
+            vertex_group.add(vertex)
+        
+        vertex_group.next_to(init_details, DOWN)
+        
+        # Annotations
+        source_label = Text("Fonte", font_size=20, color=RED).next_to(vertex_group[0], DOWN)
+        other_label = Text("Outros", font_size=20, color=BLUE).next_to(vertex_group[1], DOWN)
+        
+        # Animations
+        self.play(Write(title))
+        self.play(Write(init_details))
+        self.play(Create(vertex_group), Write(source_label), Write(other_label))
+        self.wait()
 
+        # Slide 4: Código do Algoritmo
+        self.clear()  # Clear previous slide contents
+        code_title = Text("Código do Algoritmo", font_size=50).to_edge(UP)
         # Slide 4: Código do Algoritmo
         self.clear()  # Clear previous slide contents
         code_title = Text("Código do Algoritmo", font_size=50).to_edge(UP)
@@ -88,7 +148,10 @@ def dijkstra(graph, start):
             font_size=22
         ).next_to(code_title, DOWN)
         
+        
         self.play(Write(code_title))
+        self.play(Write(code_snippet))
+        self.wait()  # Wait indefinitely
         self.play(Write(code_snippet))
         self.wait()  # Wait indefinitely
 
@@ -130,7 +193,55 @@ def dijkstra(graph, start):
             edge_label = Text(label, font_size=24).move_to(mid_point)
             labels.append(edge_label)
         
+        # Slide 5: Resultados com Grafo Gerado
+        self.clear()  # Clear previous slide contents
+        results_title = Text("Resultados - Grafo Gerado", font_size=50).to_edge(UP)
+        
+        # Criar o grafo sem labels diretamente nas arestas
+        graph = Graph(
+            vertices=["A", "B", "C", "D", "E"],
+            edges=[
+                ("A", "B"), ("B", "C"), ("A", "D"), 
+                ("D", "E"), ("C", "E")
+            ],
+            layout="spring"
+        ).scale(1.2).to_edge(DOWN)
+
+        # Adicionar labels manualmente nas arestas
+        edge_labels = {
+            ("A", "B"): "1h",
+            ("B", "C"): "2h",
+            ("A", "D"): "3h",
+            ("D", "E"): "1h",
+            ("C", "E"): "1.5h"
+        }
+        
+        labels = []
+        for edge, label in edge_labels.items():
+            start, end = edge
+            
+            # Use get_vertices() and calculate midpoint
+            start_vertex = graph.vertices[start]
+            end_vertex = graph.vertices[end]
+            
+            # Calculando o ponto médio entre os dois vértices
+            mid_point = (start_vertex.get_center() + end_vertex.get_center()) / 2
+            
+            # Criando o rótulo da aresta
+            edge_label = Text(label, font_size=24).move_to(mid_point)
+            labels.append(edge_label)
+        
         self.play(Write(results_title))
+        self.play(Create(graph))
+        
+        # Exibir os labels das arestas
+        for label in labels:
+            self.play(Write(label))
+        self.wait()  # Wait indefinitely
+
+        # Slide Final: Agradecimentos
+        self.clear()  # Clear previous slide contents
+        conclusion = Text("Obrigado!", font_size=50).to_edge(UP)
         self.play(Create(graph))
         
         # Exibir os labels das arestas

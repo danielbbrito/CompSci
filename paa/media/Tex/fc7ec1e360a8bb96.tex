@@ -1,0 +1,25 @@
+\documentclass[preview]{standalone}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\begin{center}
+\textbf{Processo de Relaxamento:}
+            \begin{itemize}
+                \item Examinar todas as arestas adjacentes de um vértice.
+                \item Atualizar a distância mais curta se uma aresta melhora o caminho.
+                \item Repete para todos os vértices.
+            \end{itemize}
+            
+            \textbf{Análise da Complexidade:}
+            \begin{itemize}
+                \item A fila de prioridade (heap binária) requer $O(\log V)$ para inserir ou atualizar cada vértice.
+                \item Cada aresta é relaxada uma vez, resultando em $O(E)$ operações de relaxamento.
+                \item Portanto, a complexidade total é $O((V + E) \cdot \log V)$:
+                \begin{itemize}
+                    \item $V$: Inserção inicial dos vértices.
+                    \item $E$: Atualizações na heap ao relaxar as arestas.
+                \end{itemize}
+            \end{itemize}
+\end{center}
+\end{document}
