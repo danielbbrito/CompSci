@@ -16,13 +16,6 @@ def fib2(dp: list, n):
     dp[n] = fib2(dp, n - 1) + fib2(dp, n - 2)
     return dp[n]
 
-def vetor_aleatorio(tam):
-    v = []
-    for i in range(tam):
-        v.append(randint(0, 10000))
-    
-    return v
-
 def main():
 
     print("Execucao para n = 10: ")
