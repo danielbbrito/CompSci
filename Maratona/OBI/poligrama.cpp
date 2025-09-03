@@ -2,49 +2,43 @@
 
 using namespace std;
 
-bool check(int sz, string s)
-{
-    string sub = s.substr(0, sz);
-    
-    for (int i = sz; i < s.length(); i += sz)
-    {
-        string sub2 = s.substr(i, sz);
-        
-        for (int j = 0; j < sub2.length(); j++)
-        {
-            string sc = sub;
-            int p = sc.find(sub2[j]);
-            
-            if (p == string::npos)
-                return false;
-                
-            sc.erase(p,1);
-            sub2.erase(p, 1);
-        }
-    }
-    
-    return true;
-}
-
 int main()
 {
+    vector<char> palavra;
+    map<char, int> ct;
+    map<char, int> ct2;
     int n;
-    
-    string s;
-    
-    cin >> n >> s;
-    
-    bool flag = false;
-    for (int i = 1; i <= s.length() / 2 && !flag; i++)
+    cin >> n;
+
+    while (n--)
     {
-        flag = check(i, s);
+        char c;
+        cin >> c;
+
+        if (ct.find(c) == ct.end())
+            ct[c] = 0;
         
-        if (flag)
+        else
+            ct[c]++;
+    }
+
+    int v = ct.begin()->second;
+    bool flag = true;
+    for (auto it: ct)
+    {
+        if (it.second != v)
         {
-            cout << s.substr(0, i) << endl;
+            flag = false;
+            break;
         }
+
+        ct2[it.first] = 0;
     }
     
     if (!flag)
-        cout << "*" << endl;
+        cout << '*' << endl;
+    else
+    {
+        
+    }
 }
