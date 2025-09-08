@@ -80,21 +80,31 @@ def main():
     
     print("Função prevista:\n")
     print(f"Hw(x) = {w1}x + {w0}")
-    print(f"w1={w1}\nw0={w0}")
+    print(f"w1={w1}\nw0={w0}\n")
     
-    
+    print("Prevendo o valor quando há uma redução de 30% de sólidos totais:")
+    print("x=30")
+    print("y_real=31")
+    print(f"y_previsto={w1 * 30 + w0}\n")
+
+    print("Medidas de precisao do modelo")    
     print("Erro quadrado:")
     print(f"SE={SE}\n")
     
     print("Erro quadrado médio:")
-    print(f"MSE={MSE}")
+    print(f"MSE={MSE}\nß")
     
     print("Raíz do erro quadrado médio: ")
     print(f"RMSE={RMSE}")
     
     plt.scatter(x, y)
     plt.plot(x, y_predict, color="#FF0000")
-    plt.plot(y, y_predict)
+    
+    for i in range(len(x)):
+        plt.plot([x[i], x[i]], [y[i], y_predict[i]], linestyle="--")
+        
+    plt.xlabel("Reducao de solidos totais %")
+    plt.ylabel("Reducao na demanda de oxigenio quimico %")
     plt.show()
     
     
