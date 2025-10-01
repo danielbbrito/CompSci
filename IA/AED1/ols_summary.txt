@@ -4,7 +4,7 @@ Dep. Variable:            consumption   R-squared:                       0.650
 Model:                            OLS   Adj. R-squared:                  0.646
 Method:                 Least Squares   F-statistic:                     166.6
 Date:                Thu, 18 Sep 2025   Prob (F-statistic):           4.77e-61
-Time:                        11:25:22   Log-Likelihood:                -638.22
+Time:                        21:50:34   Log-Likelihood:                -638.22
 No. Observations:                 273   AIC:                             1284.
 Df Residuals:                     269   BIC:                             1299.
 Df Model:                           3                                         
@@ -14,8 +14,8 @@ Covariance Type:            nonrobust
 ------------------------------------------------------------------------------
 const          6.9761      1.032      6.759      0.000       4.944       9.008
 avgtemp        0.8147      0.048     17.070      0.000       0.721       0.909
-rain          -0.0707      0.014     -5.184      0.000      -0.098      -0.044
 weekend        5.1737      0.351     14.760      0.000       4.484       5.864
+rain          -0.0707      0.014     -5.184      0.000      -0.098      -0.044
 ==============================================================================
 Omnibus:                       13.787   Durbin-Watson:                   1.981
 Prob(Omnibus):                  0.001   Jarque-Bera (JB):                7.896
