@@ -1,26 +1,29 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <errno.h> 
-#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+#include <time.h>
 
-#define PARENT(i) (i - 1 / 2)
+#define PARENT(i) ((i - 1) / 2)
 #define LEFT(i)   (2 * i + 1)
 #define RIGHT(i)  (2 * i + 2)
 
 struct Coords {
-    short la;
-    short lo;
-    short p;
+    int la;
+    int lo;
+    int p;
 };
 
 struct CoordHeap {
-    short heap_size;
-    struct Coords heap[1000]
+    int busy;
+    int heap_size;
+    struct Coords heap[1000];
 };
 
 
@@ -81,19 +84,72 @@ struct Coords heap_pop(struct CoordHeap* h)
     return max;
 }
 
+
+int heap_insert(struct CoordHeap* h, struct Coords x)
+{
+    if (h->heap_size == 1000)
+    {
+        return -1;
+    }
+
+    h->heap_size++;
+
+    h->heap[h->heap_size - 1] = x;
+    
+    int i = h->heap_size - 1;
+
+    while (i > 0 && h->heap[PARENT(i)].p < h->heap[i].p)
+    {
+        struct Coords aux = h->heap[PARENT(i)];
+        h->heap[PARENT(i)] = h->heap[i];
+        h->heap[i] = aux;
+
+        i = PARENT(i);
+    }
+
+    return 0;
+}
+
+void lock_queue(struct CoordHeap* h)
+{
+    struct timespec ts = {0, 10000 * 1000L};
+    while (__sync_lock_test_and_set(&h->busy, 1))
+    {
+        nanosleep(&ts, NULL);
+    }
+}
+
+void unlock_queue(struct CoordHeap* h)
+{
+    __sync_lock_release(&h->busy);
+}
+
+int shm_fd_global = -1;
+char shm_name[] = "/missiles";
+void handle_sigint(int signum) {
+    (void)signum;
+    if (shm_fd_global != -1) {
+        shm_unlink(shm_name);
+    }
+    _exit(0);
+}
+
 int main()
 {
-    short i = 10;
+    signal(SIGINT, handle_sigint);
+    int i = 10;
     pid_t child;
     int fd;
-    struct CoordHeap* list; 
-    fd = shm_open("/missiles", O_RDWR | O_CREAT, 0777);
+    struct CoordHeap* list;
+    fd = shm_open("/missiles", O_RDWR | O_CREAT, 0666);
 
     if (fd == -1)
     {
         printf("Erro ao criar o ambiente compartilhado de memória: %s\n", strerror(errno));
         return 1;
     }
+
+    shm_fd_global = fd;
 
     if (ftruncate(fd, sizeof(struct CoordHeap)) == -1)
     {
@@ -105,10 +161,14 @@ int main()
 
     if (list == MAP_FAILED)
     {
-        fprintf(stderr, "Erro ao mapear objeto de memória: %s\n", strerror(errno));
+        printf("Erro ao mapear objeto de memória: %s\n", strerror(errno));
+        return 1;
     }
 
-    list->topo = -1;
+    list->busy = 0;
+    list->heap_size = 0;
+    memset(list->heap, 0, sizeof(list->heap));
+
     while (i--)
     {
         child = fork();
@@ -120,17 +180,46 @@ int main()
 
     if (child == 0)
     {
-        srand(getpid());
-        struct Coords strike;
-        strike.la = rand() % 101;
-        strike.lo = rand() % 101;
-        strike.p  = rand() % 101;
+        srand((unsigned)getpid());
+        while (1)
+        {
+            struct Coords strike = {rand() % 101, rand() % 101, rand() % 101};
 
-        if (list->topo < strike.p)
-            list->topo = strike.p;
+            lock_queue(list);
+            
+            if (heap_insert(list, strike) == -1 )
+            {
+                printf("Processo #%d falhou ao enviar coordenadas de ataque (fila cheia)\n\n", getpid());
+            }
+
+            printf("Processo #%d inseriu as coordenadas:\n  %d/%d\n  p=%d\n\n", getpid(), strike.la, strike.lo, strike.p);
+
+            unlock_queue(list);
+
+            sleep(1);
+        }
         
-        printf("Strike: %d\n", strike.p);
-        return 0;
+    }
+
+    if (child > 0)
+    {
+        while (1)
+        {
+            lock_queue(list);
+
+            if (list->heap_size > 0)
+            {
+                struct Coords top = heap_pop(list);
+                printf("Ataque realizado em %d/%d com prioridade p=%d. Preparando para novo ataque.\n\n", top.la, top.lo, top.p);
+                unlock_queue(list);
+            }
+            else
+            {
+                unlock_queue(list);
+                struct timespec ts = {0, 100000L}; 
+                nanosleep(&ts, NULL);
+            }
+        }
     }
 
     return 0;
