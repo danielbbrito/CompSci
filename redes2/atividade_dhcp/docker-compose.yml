@@ -1,0 +1,38 @@
+services:
+  dhcp-server:
+    build: ./dhcp-server
+    container_name: dhcp_server
+    networks:
+      dhcp-net:
+        ipv4_address: 172.20.0.2
+      
+    cap_add:
+      - NET_ADMIN
+    command: 'eth0'
+
+  dhcp-client:
+    image: alpine:latest
+    container_name: dhcp_client
+    networks:
+      dhcp-net: {}
+    
+    command: sh -c "apk add --no-cache busybox-extras && udhcpc -i eth0 -f"
+    depends_on:
+      - dhcp-server
+  network-monitor:
+    image: alpine:latest
+    container_name: net_monitor
+    networks:
+      dhcp-net: {}
+    command: sh -c "apk add --no-cache tcpdump && tcpdump -i eth0 -l -n port 67 or port 68"
+    depends_on:
+      - dhcp-server
+networks:
+  dhcp-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+
+      
