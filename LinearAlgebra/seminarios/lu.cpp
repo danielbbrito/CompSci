@@ -68,7 +68,7 @@ pair<pair<vector<vector<double>>, vector<vector<double>>>, vector<int>> lu_decom
             swap(pivots[i], pivots[p]);
         }
         
-        if (A[i][i] != 0)
+        if (A[i][i] > 1e-14)
         {
             double r = 1 / A[i][i];
             for (int j = i + 1; j < m; j++)
@@ -138,42 +138,55 @@ vector<double> solve(vector<vector<double>> L, vector<vector<double>> U, vector<
 
 int main()
 {
-    // // --- Sistema 1: sem pivotamento necessário ---
-    // vector<vector<double>> A1 = {
-    //     {4, 2, 0},
-    //     {2, 4, 2},
-    //     {0, 2, 4}
-    // };
-    // vector<double> b1 = {2, 4, 6};
-    // auto dec1 = lu_decomp(A1);
-    // vector<int> p1 = {0,1,2};
+    
 
-    // vector<double> x1 = solve(dec1.first, dec1.second, b1, p1);
-    // if (x1.empty()) {
-    //     printf("Erro: sistema 1 singular ou quase singular\n");
-    // } else {
-    //     printf("Solução do sistema 1 (sem pivotamento):\n");
-    //     for (double xi : x1) printf("%f ", xi);
-    //     printf("\n\n");
-    // }
+//     // --- Sistema 2: pivotamento parcial necessário ---
+//    vector<vector<double>> A2 = {
+//     {0, 1, -1}, 
+//     {1, -1, 0},
+//     {1, 0, -1}
+// };
+// vector<double> b2 = {0, 0, 0};
+//     auto dec2 = lu_decomp_pivoting(A2);
 
-    // --- Sistema 2: pivotamento parcial necessário ---
-   vector<vector<double>> A2 = {
-    {0, 1, -1}, 
-    {1, -1, 0},
-    {1, 0, -1}
-};
-vector<double> b2 = {0, 0, 0};
-    auto dec2 = lu_decomp_pivoting(A2);
+//     vector<double> x2 = solve(dec2.first.first, dec2.first.second, b2, dec2.second);
+//     if (x2.empty()) {
+//         printf("Erro: sistema 2 singular\n");
+//     } else {
+//         printf("Solução do sistema 2 (com pivotamento parcial):\n");
+//         for (double xi : x2) printf("%f ", xi);
+//         printf("\n");
+//     }
 
-    vector<double> x2 = solve(dec2.first.first, dec2.first.second, b2, dec2.second);
-    if (x2.empty()) {
-        printf("Erro: sistema 2 singular\n");
-    } else {
-        printf("Solução do sistema 2 (com pivotamento parcial):\n");
-        for (double xi : x2) printf("%f ", xi);
+    vector<vector<double>>  A = {
+        {0.001, 0.0},
+        {1.0, 1000}
+    };
+
+    pair<vector<vector<double>>, vector<vector<double>>> p = lu_decomp(A);
+
+    vector<vector<double>> ans1 = p.second;
+    printf("Eliminação direta:\n");
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            printf("%.8f ", ans1[i][j]);
+        }
         printf("\n");
     }
+    pair<pair<vector<vector<double>>, vector<vector<double>>>, vector<int>> p2 = lu_decomp_pivoting(A);
+    vector<vector<double>> ans2 = p2.first.second;
+    printf("\n");
+    printf("Eliminação com pivotamento parcial:\n");
 
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            printf("%.8f ", ans2[i][j]);
+        }
+        printf("\n");
+    }
     return 0;
 }
