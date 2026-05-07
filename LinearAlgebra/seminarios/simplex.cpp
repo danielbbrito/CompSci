@@ -1,4 +1,8 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <stdexcept>
+#include <algorithm>
 
 using namespace std;
 
@@ -38,6 +42,11 @@ pair<pair<MATRIX, MATRIX>, vector<int>> lu_decomp_pivoting(MATRIX A)
             // Realizamos a troca de linhas
             swap(A[i], A[p]);
             swap(pivots[i], pivots[p]);
+            
+            for (int k = 0; k < i; k++)
+            {
+                swap(L[i][k], L[p][k]);
+            }
         }
         
         if (abs(A[i][i]) > 1e-14)
@@ -113,15 +122,6 @@ VECTOR solve(MATRIX A, VECTOR b)
     pair<pair<MATRIX, MATRIX>, vector<int>> LU = lu_decomp_pivoting(A);
     return solveLU(LU.first.first, LU.first.second, b, LU.second);
 }
-MATRIX tranpose(MATRIX A)
-{
-    MATRIX At = A;
-    for (int i = 0; i < A.size(); i++)
-        for (int j = 0; j < A[0].size(); j++)
-            At[i][j] = A[i][j];
-
-    return At;
-}
 
 double dot(VECTOR a, VECTOR b)
 {
@@ -173,7 +173,7 @@ class Simplex {
             return col;
         }
 
-        VECTOR phase_one()
+        void phase_one()
         {
             // Inicializamos e populamos a matriz aumentada [A|I] e o vetor de variáveis de decisão xa
             MATRIX AI(m, VECTOR(n + m, 0.0));
@@ -380,7 +380,6 @@ class Simplex {
             {
                 if (Ib[i] >= n)
                 {
-                    // 🔥 RECONSTRUIR B antes de usar
                     for (int r = 0; r < m; r++)
                     {
                         for (int c = 0; c < m; c++)
@@ -389,7 +388,6 @@ class Simplex {
                         }
                     }
 
-                    // 🔥 RECALCULAR D com base atual
                     int p = In.size();
                     MATRIX D(m, VECTOR(p, 0.0));
 
@@ -424,7 +422,6 @@ class Simplex {
                     // atualizar base
                     Ib[i] = ib;
 
-                    // 🔥 atualizar In corretamente
                     INDEX newIn2;
 
                     for (int k = 0; k < In.size(); k++)
@@ -468,7 +465,11 @@ class Simplex {
             }
 
             xB = solve(B, b);
-            return xB;
+            
+            x.resize(n, 0.0);
+            // Reconstruir vetor completo
+            for (int i = 0; i < m; i++)
+                x[Ib[i]] = xB[i];
         }
 
     public:
@@ -486,38 +487,68 @@ class Simplex {
             In.resize(n, 0);
         }
 
-        VECTOR solveSimplex()
+        void solveSimplex()
         {
-            return phase_one();
+            phase_one();
         }
 
-        
+        VECTOR get_x()
+        {
+            return x;
+        }
+
+        MATRIX get_B()
+        {
+            return B;
+        }
+        INDEX get_Ib()
+        {
+            return Ib;
+        }
         
 };
 
 int main()
 {
     MATRIX A = {
-        {1, 1, 1, 0, 1, 0},
-        {1, 0, 0, 1, 0, 1}
+        {1, 1, 1, 0},
+        {1, 0, 0, 1}
     };
 
-    VECTOR b = {2, 1};  
+    VECTOR b = {2, 2};  
     int m = 2;          
     int n = 4;     
 
     try
     {
         Simplex s(A, b);
-        VECTOR xB = s.solveSimplex(); // chama phase_one
-
-        cout << "Fase I concluida com sucesso (problema viavel) com xB = [";
-        cout << xB[0];
-        for (int i = 1; i < xB.size(); i++)
+        s.solveSimplex();
+        VECTOR x = s.get_x();
+        MATRIX B = s.get_B();
+        INDEX Ib = s.get_Ib();
+        cout << "Fase I concluida com sucesso (problema viavel) com SBV inicial para o problema original x = [";
+        cout << x[0];
+        for (int i = 1; i < x.size(); i++)
         {
-            cout << ", " << xB[i];
+            cout << ", " << x[i];
         }
-        cout << "]" << endl;
+        cout << "]\n" << endl;
+
+        cout << "A matriz base ao final é B = \n";
+        for (int i = 0; i < B.size(); i++)
+        {
+            for (int j = 0; j < B[0].size(); j++)
+            {
+                cout << B[i][j] << " ";
+            }
+            cout << "\n";
+        }
+
+        cout << "Ib = {" << Ib[0]++;
+        for (int i = 1; i < Ib.size(); i++)
+            cout << "," << Ib[i]++;
+        cout << "}" << endl;
+
     }
     catch (exception& e)
     {
